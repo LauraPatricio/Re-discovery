@@ -1,120 +1,143 @@
-let bg;
-let circles = [];
-let score = 0;
-let lives = 3; 
-const GOAL = 10;
-let gameState = 'PLAY';
+let bgImg4;
+let circles4 = [];
+let score4 = 0;
+let lives4 = 3; 
+const GOAL4 = 10;
+let tarefa4State = 'PLAY';
 
-const GAME_WIDTH = 800;
-const GAME_HEIGHT = 500;
-
-function preload() {
-  bg = loadImage('tarefa4.png');
+function preloadTarefa4() {
+  bgImg4 = loadImage('imagens/tarefa4.png'); // Ajustado para a pasta imagens
 }
 
-function setup() {
-  createCanvas(GAME_WIDTH, GAME_HEIGHT);
+function setupTarefa4() {
+  // Já não precisamos de fazer contas aqui, o menu.js trata disso com o calcularPopUpWide!
 }
 
-function draw() {
-  image(bg, 0, 0, GAME_WIDTH, GAME_HEIGHT);
+function drawTarefa4() {
+  // ── EFEITO POP-UP ──
+  image(bgNave, 0, 0, width, height); // Fundo da nave
+  
+  noStroke();
+  fill(0, 0, 0, 180);
+  rect(0, 0, width, height); // Película escura
 
-  if (gameState === 'PLAY') {
-    displayHUD();
+  // ── ESCALA PARA O POP-UP WIDESCREEN ──
+  push();
+  translate(widePopX, widePopY);
+  scale(widePopW / WIDE_WIDTH, widePopH / WIDE_HEIGHT);
 
-    if (frameCount % 60 === 0 && circles.length < 3) {
-      circles.push(new ClickCircle());
+  imageMode(CORNER);
+  image(bgImg4, 0, 0, WIDE_WIDTH, WIDE_HEIGHT);
+
+  if (tarefa4State === 'PLAY') {
+    displayHUD4();
+
+    if (frameCount % 60 === 0 && circles4.length < 3) {
+      circles4.push(new ClickCircle4());
     }
 
-    for (let i = circles.length - 1; i >= 0; i--) {
-      circles[i].update();
-      circles[i].show();
+    for (let i = circles4.length - 1; i >= 0; i--) {
+      circles4[i].update();
+      circles4[i].show();
 
-      if (circles[i].isExpired()) {
-        // --- LOGIC CHANGE HERE ---
-        if (circles[i].isClicked) {
-          score++; // Only increment score when it closes if it was clicked
+      if (circles4[i].isExpired()) {
+        if (circles4[i].isClicked) {
+          score4++; 
         } else {
-          lives--; // Otherwise, it's a miss
-          if (lives <= 0) gameState = 'GAMEOVER';
+          lives4--; 
+          if (lives4 <= 0) tarefa4State = 'GAMEOVER';
         }
-        circles.splice(i, 1);
+        circles4.splice(i, 1);
       }
     }
 
-    if (score >= GOAL) {
-      gameState = 'WIN';
+    // --- CONDIÇÃO DE VITÓRIA ---
+    if (score4 >= GOAL4 && tarefa4State === 'PLAY') {
+      tarefa4State = 'WIN';
+      
+      TarefaConcluida.super = true; // Avisa a nave que ganhámos a Tarefa 4 (Super)
+      setTimeout(() => {
+          goTo("NAVE");
+          resetGame4(); // Limpa as variáveis para se o user quiser repetir
+      }, 1500);
     }
-  } else if (gameState === 'GAMEOVER') {
-    showGameOver();
-  } else if (gameState === 'WIN') {
-    showWinScreen();
+    
+  } else if (tarefa4State === 'GAMEOVER') {
+    showGameOver4();
+  } else if (tarefa4State === 'WIN') {
+    showWinScreen4();
   }
+  
+  pop(); // Fim da escala
 }
 
-function displayHUD() {
+function displayHUD4() {
   fill(0, 255, 255); 
   noStroke();
   textAlign(LEFT);
   textSize(24);
-  text(`Superpower Charged: ${score} / ${GOAL}`, 60, 60);
+  text(`Superpower Charged: ${score4} / ${GOAL4}`, 60, 60);
   
   fill(255, 50, 50);
-  text(`Shields: ${"❤️".repeat(lives)}`, 60, 90);
+  text(`Shields: ${"❤️".repeat(lives4)}`, 60, 90);
 }
 
-function showGameOver() {
+function showGameOver4() {
   fill(0, 0, 0, 200);
-  rect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+  rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
   fill(255, 50, 50);
   textAlign(CENTER, CENTER);
   textSize(40);
-  text("SYSTEM FAILURE", GAME_WIDTH / 2, GAME_HEIGHT / 2);
+  text("SYSTEM FAILURE", WIDE_WIDTH / 2, WIDE_HEIGHT / 2);
   textSize(20);
   fill(255);
-  text("Press Space to Reboot", GAME_WIDTH / 2, GAME_HEIGHT / 2 + 50);
+  text("Press Space to Reboot", WIDE_WIDTH / 2, WIDE_HEIGHT / 2 + 50);
 }
 
-function showWinScreen() {
+function showWinScreen4() {
   fill(0, 255, 255, 200);
-  rect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+  rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
   fill(255);
   textAlign(CENTER, CENTER);
   textSize(40);
-  text("MEMORY RECOVERED", GAME_WIDTH / 2, GAME_HEIGHT / 2);
+  text("MEMORY RECOVERED", WIDE_WIDTH / 2, WIDE_HEIGHT / 2);
   textSize(20);
-  text("Press Space to Continue", GAME_WIDTH / 2, GAME_HEIGHT / 2 + 50);
+  text("SYNCING...", WIDE_WIDTH / 2, WIDE_HEIGHT / 2 + 50);
 }
 
-function mousePressed() {
-  if (gameState === 'PLAY') {
-    for (let i = circles.length - 1; i >= 0; i--) {
-      // We removed "score++" from here
-      if (!circles[i].isClicked && circles[i].checkMouse(mouseX, mouseY)) {
-        circles[i].isClicked = true; 
+function mousePressedTarefa4() {
+  if (tarefa4State === 'PLAY') {
+    // --- MAGIA MATEMÁTICA ---
+    // Como a tela está encolhida, convertemos a posição real do rato para a posição virtual do jogo
+    let virtualMouseX = (mouseX - widePopX) / (widePopW / WIDE_WIDTH);
+    let virtualMouseY = (mouseY - widePopY) / (widePopH / WIDE_HEIGHT);
+
+    for (let i = circles4.length - 1; i >= 0; i--) {
+      if (!circles4[i].isClicked && circles4[i].checkMouse(virtualMouseX, virtualMouseY)) {
+        circles4[i].isClicked = true; 
         break; 
       }
     }
   }
 }
 
-function keyPressed() {
-  if ((gameState === 'WIN' || gameState === 'GAMEOVER') && key === ' ') {
-    resetGame();
+function keyPressedTarefa4() {
+  if ((tarefa4State === 'WIN' || tarefa4State === 'GAMEOVER') && key === ' ') {
+    resetGame4();
   }
 }
 
-function resetGame() {
-  score = 0;
-  lives = 3;
-  circles = [];
-  gameState = 'PLAY';
+function resetGame4() {
+  score4 = 0;
+  lives4 = 3;
+  circles4 = [];
+  tarefa4State = 'PLAY';
 }
 
-class ClickCircle {
+class ClickCircle4 {
   constructor() {
-    this.x = random(100, GAME_WIDTH - 100);
-    this.y = random(120, GAME_HEIGHT - 100);
+    this.x = random(100, WIDE_WIDTH - 100);
+    this.y = random(120, WIDE_HEIGHT - 100);
     this.innerR = 40;
     this.outerR = 150; 
     this.shrinkSpeed = 1.2; 

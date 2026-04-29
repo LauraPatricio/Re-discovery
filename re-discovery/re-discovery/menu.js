@@ -10,8 +10,13 @@ let startBtn, aboutBtn;
 
 // Variáveis da transição (fade a preto)
 let fadeAlpha = 0;
-let isFading  = false;
+let isFading = false;
 let nextState = "";
+
+//proporção popup
+let widePopX, widePopY, widePopW, widePopH;
+const WIDE_WIDTH = 800;
+const WIDE_HEIGHT = 450;
 
 // ── Preload ───────────────────────────────────
 function preload() {
@@ -22,21 +27,42 @@ function preload() {
     preloadTarefa1();
     preloadTarefa2();
     preloadTarefa3();
+    preloadTarefa4();
 }
 // ── Setup ─────────────────────────────────────
 function setup() {
     createCanvas(windowWidth, windowHeight);
+    calcularPopUpWide();
     initButtons();
     setupTarefa1();
     setupTarefa2();
     setupTarefa3();
+    setupTarefa4();
 }
+
+function calcularPopUpWide() {
+  widePopW = width  * 0.75;
+  widePopH = widePopW * (WIDE_HEIGHT / WIDE_WIDTH);
+
+  // Se a altura ultrapassar o ecrã, escala pela altura
+  if (widePopH > height * 0.8) {
+    widePopH = height * 0.8;
+    widePopW = widePopH * (WIDE_WIDTH / WIDE_HEIGHT);
+  }
+
+  // Centrar no ecrã
+  widePopX = (width  - widePopW) / 2;
+  widePopY = (height - widePopH) / 2;
+}
+//__ Reajustar tamanho ____________________________
 
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
+    calcularPopUpWide(); // Recalcula o pop-up ao mudar o tamanho da janela
     initButtons();
     windowResizedTarefa1();
     windowResizedTarefa2();
+
 }
 
 // ── Botões responsivos ─────────────────────────
@@ -65,11 +91,10 @@ function draw() {
     } else if (gameState === "LIVRO") {
         // Placeholder – substitui pela função da cena seguinte
         drawLivroScreen();
-    }else if (gameState === "MENU_PERSONAGENS") {
+    } else if (gameState === "MENU_PERSONAGENS") {
         drawMenuPersonagens();
-    }else if (gameState === "NAVE") {
+    } else if (gameState === "NAVE") {
         drawNave();
-        verificarProgressoNave(); // Verifica constantemente se já acabou as 2 tarefas
     }
     else if (gameState === "TAREFA1") {
         drawTarefa1();
@@ -79,6 +104,8 @@ function draw() {
     }
     else if (gameState === "TAREFA3") {
         drawTarefa3();
+    } else if (gameState === "TAREFA4") {
+        drawTarefa4();
     }
     handleTransition();
 }
@@ -162,23 +189,33 @@ function mousePressed() {
             mouseY > startBtn.y - startBtn.h / 2 && mouseY < startBtn.y + startBtn.h / 2
         ) {
             nextState = "QUARTO";
-            isFading  = true;
+            isFading = true;
         }
     }
     else if (gameState === "QUARTO") {
         handleQuartoClick(); // definido em quarto.js
-    }else if (gameState === "LIVRO") {
+    } else if (gameState === "LIVRO") {
         handleLivroClick();
-    }else if (gameState === "MENU_PERSONAGENS") {
+    } else if (gameState === "MENU_PERSONAGENS") {
         handlePersonagensClick();
-    }else if (gameState === "NAVE") handleNaveClick(); // Chamamos a nova função da nave
-    else if (gameState === "TAREFA1") mousePressedTarefa1();
-    else if (gameState === "TAREFA2") mousePressedTarefa2();
-    else if (gameState === "TAREFA3") mousePressedTarefa3();
+    } else if (gameState === "NAVE") {
+        handleNaveClick(); // Chamamos a nova função da nave
+    } else if (gameState === "TAREFA1") {
+        mousePressedTarefa1();
+    } else if (gameState === "TAREFA2") {
+        mousePressedTarefa2();
+    } else if (gameState === "TAREFA3") {
+        mousePressedTarefa3();
+    } else if (gameState === "TAREFA4") {
+        mousePressedTarefa4();
+    }
 }
 
 function keyPressed() {
     if (gameState === "TAREFA3") {
         keyPressedTarefa3();
+    }
+    else if (gameState === "TAREFA4") {
+        keyPressedTarefa4();
     }
 }

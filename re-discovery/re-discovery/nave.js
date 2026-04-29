@@ -108,18 +108,16 @@ function configurarBotoesNave() {
 function verificarProgressoNave() {
     if (personagemAtual === "BARYL") {
         if (TarefaConcluida.aerodynamic && TarefaConcluida.harder) {
-            // Desbloqueia próximo personagem
             personagensStatus.arpegius = true;
             goTo("MENU_PERSONAGENS");
-            personagemAtual = ""; // Limpa para não repetir
+            personagemAtual = "";
         }
     }
-    else if (personagemAtual === "ARPEGIUS") {
-        if (TarefaConcluida.crescendolls && TarefaConcluida.super) {
-            // Desbloqueia próximo personagem (Octave)
+    else if (personagemAtual === "ARPEGIUS") { // Nome corrigido aqui
+        if (TarefaConcluida.crescendolls && TarefaConcluida.super) { // Tarefas corretas aqui
             personagensStatus.octave = true;
             goTo("MENU_PERSONAGENS");
-            personagemAtual = ""; // Limpa para não repetir
+            personagemAtual = "";
         }
     }
     else if (personagemAtual === "OCTAVE") {
@@ -167,19 +165,19 @@ function handleNaveClick() {
         goTo("TAREFA4");
     }
 
-    if (btnNave.btnSome && !TarefaConcluida.some && clickBtn(width / 5, height / 2)) {
-        goTo("TAREFA5");
-    }
+    // if (btnNave.btnSome && !TarefaConcluida.some && clickBtn(width / 5, height / 2)) {
+    //     goTo("TAREFA5");
+    // }
 
-    if (btnNave.btnVoyager && !TarefaConcluida.voyager && clickBtn(width / 6, height / 2)) {
-        goTo("TAREFA6");
-    }
+    // if (btnNave.btnVoyager && !TarefaConcluida.voyager && clickBtn(width / 6, height / 2)) {
+    //     goTo("TAREFA6");
+    // }
 
-    if (btnNave.btnVeridis && !TarefaConcluida.veridis && clickBtn(width / 7, height / 2)) {
-        goTo("TAREFA7");
-    }
+    // if (btnNave.btnVeridis && !TarefaConcluida.veridis && clickBtn(width / 7, height / 2)) {
+    //     goTo("TAREFA7");
+    // }
 
-      if (btnNave.btnOne && !TarefaConcluida.one && clickBtn(width / 8, height / 2)) {
-        goTo("TAREFA7");
-    }
+    //   if (btnNave.btnOne && !TarefaConcluida.one && clickBtn(width / 8, height / 2)) {
+    //     goTo("TAREFA8");
+    // }
 }
