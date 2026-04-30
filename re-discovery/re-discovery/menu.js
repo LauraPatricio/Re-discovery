@@ -30,8 +30,7 @@ function preload() {
     preloadTarefa4();
     preloadTarefa5();
     preloadTarefa6();
-    preloadTarefa7();
-    // preloadTarefa8();
+    preloadTarefa8();
 }
 // ── Setup ─────────────────────────────────────
 function setup() {
@@ -45,7 +44,7 @@ function setup() {
     setupTarefa5();
     setupTarefa6();
     setupTarefa7();
-    // setupTarefa8();
+    setupTarefa8();
 }
 
 function calcularPopUpWide() {
@@ -118,9 +117,9 @@ function draw() {
     } else if (gameState === "TAREFA7") {
         drawTarefa7();
     } 
-    // else if (gameState === "TAREFA8") {
-    //     drawTarefa8();
-    // }
+    else if (gameState === "TAREFA8") {
+        drawTarefa8();
+    }
     handleTransition();
 }
 
@@ -229,9 +228,9 @@ function mousePressed() {
     } else if (gameState === "TAREFA7") {
         mousePressedTarefa7();
     } 
-    // else if (gameState === "TAREFA8") {
-    //     mousePressedTarefa8();
-    // }
+    else if (gameState === "TAREFA8") {
+        mousePressedTarefa8();
+    }
 }
 
 function keyPressed() {

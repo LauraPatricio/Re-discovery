@@ -11,9 +11,6 @@ const RING_X = 280;
 const RING_Y = 450 / 2; // (WIDE_HEIGHT / 2)
 const RING_RADIUS = 120;
 
-function preloadTarefa7() {
-}
-
 function setupTarefa7() {
   // Define as posições das sílabas usando a proporção panorâmica
   syllables = [

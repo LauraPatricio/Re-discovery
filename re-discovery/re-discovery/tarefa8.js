@@ -1,18 +1,17 @@
-let bg, vinylCenterImg;
-let phase = 1; 
-let sliderY = 300;
+let bgImg8, vinylCenterImg;
+let tarefa8phase = 1; 
+let sliderY = 270; // (Era 300) Ajustado para a proporção 800x450
 let sliderSpeed = 4;
 let sliderDirection = 1;
 
-// --- COORDINATES TUNED TO THE CONSOLE BOX ---
-let rectX = 104;     
-let rectW = 128;     
-let greenZoneY = 260; 
-let greenZoneH = 80;
+// --- COORDENADAS AJUSTADAS PARA 800x450 ---
+let rectX = 92;      // (Era 104)
+let rectW = 114;     // (Era 128)
+let greenZoneY = 234; // (Era 260)
+let greenZoneH = 72;  // (Era 80)
 
-// ADJUSTED: Moved higher (285) and scaled up (145px) to cover the hole
-let vinylX = 604;    
-let vinylY = 250; 
+let vinylX = 537;    // (Era 604)
+let vinylY = 225;    // (Era 250)
 // --------------------------------------------
 
 let rotationAngle = 0;
@@ -21,31 +20,43 @@ let totalRotation = 0;
 let lastMouseAngle = 0;
 let isSpinning = false;
 
-const GAME_WIDTH = 900;
-const GAME_HEIGHT = 500;
-
-function preload() {
-  bg = loadImage('tarefa8.png');
-  vinylCenterImg = loadImage('Daft_Punk_Discovery.png'); 
+function preloadTarefa8() {
+  // Ajustado o prefixo para carregar da pasta correta
+  bgImg8 = loadImage('imagens/tarefa8.png');
+  vinylCenterImg = loadImage('imagens/Daft_Punk_Discovery.png'); 
 }
 
-function setup() {
-  createCanvas(GAME_WIDTH, GAME_HEIGHT);
+function setupTarefa8() {
 }
 
-function draw() {
-  background(0);
-  image(bg, 0, 0, GAME_WIDTH, GAME_HEIGHT);
+function drawTarefa8() {
+  // ── EFEITO POP-UP ──
+  image(bgNave, 0, 0, width, height); 
+  
+  noStroke();
+  fill(0, 0, 0, 180);
+  rect(0, 0, width, height); 
+
+  // ── ESCALA PARA O POP-UP WIDESCREEN ──
+  push();
+  translate(widePopX, widePopY);
+  scale(widePopW / WIDE_WIDTH, widePopH / WIDE_HEIGHT);
+
+  imageMode(CORNER);
+  image(bgImg8, 0, 0, WIDE_WIDTH, WIDE_HEIGHT);
 
   drawVinylLabel();
 
-  if (phase === 1) {
+  // Corrigido de "phase" para usar a tua variável global "tarefa8phase"
+  if (tarefa8phase === 1) {
     handleSliderPhase();
-  } else if (phase === 2) {
+  } else if (tarefa8phase === 2) {
     handleVinylPhase();
-  } else if (phase === 3) {
+  } else if (tarefa8phase === 3) {
     showFinalWin();
   }
+  
+  pop(); // Fim da escala
 }
 
 function drawVinylLabel() {
@@ -53,8 +64,8 @@ function drawVinylLabel() {
   translate(vinylX, vinylY);
   rotate(rotationAngle);
   imageMode(CENTER);
-  // SIZE INCREASED: 145px covers the white area better
-  image(vinylCenterImg, 0, 0, 155, 155); 
+  // Tamanho redimensionado proporcionalmente de 155 para 138
+  image(vinylCenterImg, 0, 0, 138, 138); 
   pop();
 }
 
@@ -64,7 +75,9 @@ function handleSliderPhase() {
   rect(rectX, greenZoneY, rectW, greenZoneH); 
 
   sliderY += sliderSpeed * sliderDirection;
-  if (sliderY > 430 || sliderY < 140) sliderDirection *= -1;
+  
+  // Limites do slider redimensionados proporcionalmente de 430/140 para 387/126
+  if (sliderY > 387 || sliderY < 126) sliderDirection *= -1;
 
   stroke(0, 255, 255);
   strokeWeight(5);
@@ -77,8 +90,12 @@ function handleSliderPhase() {
 }
 
 function handleVinylPhase() {
-  if (mouseIsPressed && dist(mouseX, mouseY, vinylX, vinylY) < 180) {
-    let currentAngle = atan2(mouseY - vinylY, mouseX - vinylX);
+  // Conversão do rato virtual para o vinil detetar a rotação corretamente
+  let virtualMouseX = (mouseX - widePopX) / (widePopW / WIDE_WIDTH);
+  let virtualMouseY = (mouseY - widePopY) / (widePopH / WIDE_HEIGHT);
+
+  if (mouseIsPressed && dist(virtualMouseX, virtualMouseY, vinylX, vinylY) < 160) {
+    let currentAngle = atan2(virtualMouseY - vinylY, virtualMouseX - vinylX);
     
     if (isSpinning) {
       let delta = currentAngle - lastMouseAngle;
@@ -93,33 +110,41 @@ function handleVinylPhase() {
     isSpinning = false;
   }
 
-  // --- PROGRESS BAR: SMALLER WIDTH ---
-  let barWidth = 150; // Reduced from 300
+  // --- PROGRESS BAR: SMALLER WIDTH E CENTRALIZADA NO NOSSO WIDE_WIDTH ---
+  let barWidth = 150; 
   let progress = map(totalRotation, 0, TWO_PI * targetRotations, 0, barWidth);
   
   noStroke();
   fill(40);
-  rect(width/2 - barWidth/2, 445, barWidth, 8, 4); 
+  rect(WIDE_WIDTH/2 - barWidth/2, 400, barWidth, 8, 4); 
   
   fill(0, 255, 100);
-  rect(width/2 - barWidth/2, 445, constrain(progress, 0, barWidth), 8, 4);
+  rect(WIDE_WIDTH/2 - barWidth/2, 400, constrain(progress, 0, barWidth), 8, 4);
 
-  if (totalRotation >= TWO_PI * targetRotations) {
-    phase = 3;
+  if (totalRotation >= TWO_PI * targetRotations && tarefa8phase === 2) {
+    tarefa8phase = 3;
+    
+    // --- VITÓRIA E DESBLOQUEIO ---
+    TarefaConcluida.one = true; // Avisa a nave que a Tarefa One More Time foi feita
+    
+    setTimeout(() => {
+        goTo("NAVE"); 
+        resetTarefa8();
+    }, 2000); // 2 segundos para o jogador ler o "Discovery Complete"
   }
 }
 
-function mousePressed() {
-  if (phase === 1) {
+function mousePressedTarefa8() {
+  if (tarefa8phase === 1) {
     if (sliderY > greenZoneY && sliderY < greenZoneY + greenZoneH) {
-      phase = 2;
+      tarefa8phase = 2;
     }
   }
 }
 
 function showFinalWin() {
   fill(0, 0, 0, 220);
-  rect(0, 0, width, height);
+  rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
   
   textAlign(CENTER, CENTER);
   drawingContext.shadowBlur = 25;
@@ -127,10 +152,18 @@ function showFinalWin() {
   
   fill(0, 255, 100);
   textSize(50);
-  text("IDENTITY RECOVERED", width/2, height/2 - 20);
+  text("IDENTITY RECOVERED", WIDE_WIDTH/2, WIDE_HEIGHT/2 - 20);
   
   drawingContext.shadowBlur = 0;
   fill(255);
   textSize(22);
-  text("One More Time... Discovery complete.", width/2, height/2 + 50);
+  text("One More Time... Discovery complete.", WIDE_WIDTH/2, WIDE_HEIGHT/2 + 50);
+}
+
+function resetTarefa8() {
+    tarefa8phase = 1;
+    sliderY = 270;
+    rotationAngle = 0;
+    totalRotation = 0;
+    isSpinning = false;
 }
