@@ -30,6 +30,8 @@ function preload() {
     preloadTarefa4();
     preloadTarefa5();
     preloadTarefa6();
+    preloadTarefa7();
+    // preloadTarefa8();
 }
 // ── Setup ─────────────────────────────────────
 function setup() {
@@ -42,21 +44,23 @@ function setup() {
     setupTarefa4();
     setupTarefa5();
     setupTarefa6();
+    setupTarefa7();
+    // setupTarefa8();
 }
 
 function calcularPopUpWide() {
-  widePopW = width  * 0.65;
-  widePopH = widePopW * (WIDE_HEIGHT / WIDE_WIDTH);
+    widePopW = width * 0.65;
+    widePopH = widePopW * (WIDE_HEIGHT / WIDE_WIDTH);
 
-  // Se a altura ultrapassar o ecrã, escala pela altura
-  if (widePopH > height * 0.65) {
-    widePopH = height * 0.65;
-    widePopW = widePopH * (WIDE_WIDTH / WIDE_HEIGHT);
-  }
+    // Se a altura ultrapassar o ecrã, escala pela altura
+    if (widePopH > height * 0.65) {
+        widePopH = height * 0.65;
+        widePopW = widePopH * (WIDE_WIDTH / WIDE_HEIGHT);
+    }
 
-  // Centrar no ecrã
-  widePopX = (width  - widePopW) / 2;
-  widePopY = (height - widePopH) / 2;
+    // Centrar no ecrã
+    widePopX = (width - widePopW) / 2;
+    widePopY = (height - widePopH) / 2;
 }
 //__ Reajustar tamanho ____________________________
 
@@ -99,19 +103,24 @@ function draw() {
         drawMenuPersonagens();
     } else if (gameState === "NAVE") {
         drawNave();
-    }else if (gameState === "TAREFA1") {
+    } else if (gameState === "TAREFA1") {
         drawTarefa1();
-    }else if (gameState === "TAREFA2") {
+    } else if (gameState === "TAREFA2") {
         drawTarefa2();
-    }else if (gameState === "TAREFA3") {
+    } else if (gameState === "TAREFA3") {
         drawTarefa3();
     } else if (gameState === "TAREFA4") {
         drawTarefa4();
     } else if (gameState === "TAREFA5") {
         drawTarefa5();
-    }else if (gameState === "TAREFA6") {
+    } else if (gameState === "TAREFA6") {
         drawTarefa6();
-    }
+    } else if (gameState === "TAREFA7") {
+        drawTarefa7();
+    } 
+    // else if (gameState === "TAREFA8") {
+    //     drawTarefa8();
+    // }
     handleTransition();
 }
 
@@ -217,7 +226,12 @@ function mousePressed() {
         mousePressedTarefa5();
     } else if (gameState === "TAREFA6") {
         mousePressedTarefa6();
-    }
+    } else if (gameState === "TAREFA7") {
+        mousePressedTarefa7();
+    } 
+    // else if (gameState === "TAREFA8") {
+    //     mousePressedTarefa8();
+    // }
 }
 
 function keyPressed() {
@@ -233,6 +247,16 @@ function keyPressed() {
 }
 
 function mouseReleased() {
-    mouseReleasedTarefa6();
+   if (gameState === "TAREFA6") {
+        mouseReleasedTarefa6();
+    }
+    else if (gameState === "TAREFA7") {
+        mouseReleasedTarefa7();
+    }
 }
 
+function mouseDragged() {
+   if (gameState === "TAREFA7") {
+        mouseDraggedTarefa7(); 
+    }
+}
