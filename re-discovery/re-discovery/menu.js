@@ -3,7 +3,7 @@
 //  "MENU"  →  "QUARTO"  →  "PROXIMA_CENA"
 // ─────────────────────────────────────────────
 
-let bgMenu;
+let bgMenu,exitImg;;
 let gameState = "MENU";
 let startBtn, aboutBtn;
 
@@ -21,6 +21,7 @@ const WIDE_HEIGHT = 450;
 // ── Preload ───────────────────────────────────
 function preload() {
     bgMenu = loadImage('imagens/fundo.png');
+    exitImg = loadImage('imagens/Exit.png');
     preloadQuarto(); // ← adiciona isto
     preloadLivro();
     preloadMenuPerson();
@@ -45,6 +46,81 @@ function setup() {
     setupTarefa6();
     setupTarefa7();
     setupTarefa8();
+}
+
+// ─── BOTÃO EXIT UNIVERSAL ─────────────────────────────
+
+function drawUniversalExit() {
+    let px, py, pw;
+    
+    // Deteta qual é o tamanho de pop-up que estamos a usar
+
+    //AJEITAR LUGAR DO BOTAO_____________________________________________________
+    //AJEITAR BOTAO NA TAREFA 1 ___________________________________________________________________________
+
+
+    if (gameState === "TAREFA1") { px = popX+25; py = popY+20; pw = popW; }
+    else if (gameState === "TAREFA2") { px = t2_popX; py = t2_popY; pw = t2_popW; }
+    else { px = widePopX; py = widePopY; pw = widePopW; }
+
+    let size = width * 0.025; // Tamanho responsivo do botão
+    let ex = px + pw;        // Posição X (Canto superior direito)
+    let ey = py;             // Posição Y (Canto superior direito)
+
+    push();
+    imageMode(CENTER);
+    
+    // Efeito de passar o rato por cima (Hover)
+    if (dist(mouseX, mouseY, ex, ey) < size / 2) {
+        cursor(HAND);
+        tint(255, 150, 150); // Fica ligeiramente vermelho
+    }
+    
+    image(exitImg, ex, ey, size, size);
+    pop();
+}
+
+function checkUniversalExit() {
+    let px, py, pw;
+    if (gameState === "TAREFA1") { px = popX; py = popY; pw = popW; }
+    else if (gameState === "TAREFA2") { px = t2_popX; py = t2_popY; pw = t2_popW; }
+    else { px = widePopX; py = widePopY; pw = widePopW; }
+
+    let size = width * 0.03;
+    let ex = px + pw;
+    let ey = py;
+
+    // Se o clique foi em cima da bola de Exit
+    if (dist(mouseX, mouseY, ex, ey) < size / 2) {
+        resetCurrentTask(); // Limpa o jogo antes de sair
+        goTo("NAVE");       // Volta à nave
+        return true;        // Confirma que o clique foi processado
+    }
+    return false;
+}
+
+function resetCurrentTask() {
+    // Faz reset específico dependendo da tarefa em que estavas
+    if (gameState === "TAREFA1") {
+        gameStatus = "";
+        gameStarted = false;
+    } else if (gameState === "TAREFA2") {
+        tarefa2State = 'MEMORIZE';
+        loseTimer = 0;
+        playerSequence = [];
+        sequenceIndex = 0;
+        displayWord = "";
+    } else if (gameState === "TAREFA3") { resetGame3(); }
+    else if (gameState === "TAREFA4") { resetGame4(); }
+    else if (gameState === "TAREFA5") { resetGame5(); }
+    else if (gameState === "TAREFA6") { resetGame6(); }
+    else if (gameState === "TAREFA7") { 
+        // Reset manual para a tarefa 7, visto que algumas vars não estão na func de reset
+        resetAttempt(); 
+        discoveryVisible = false; 
+        flashError = false; 
+    }
+    else if (gameState === "TAREFA8") { resetTarefa8(); }
 }
 
 function calcularPopUpWide() {
@@ -90,6 +166,7 @@ function initButtons() {
 function draw() {
     // Reset do cursor a cada frame
     if (!isFading) cursor(ARROW);
+    
 
     if (gameState === "MENU") {
         drawMenu();
@@ -120,6 +197,14 @@ function draw() {
     else if (gameState === "TAREFA8") {
         drawTarefa8();
     }
+    else if (gameState === "VITORIA") { // <--- NOVO
+        drawVitoriaScreen();
+    }
+
+    if (gameState.startsWith("TAREFA")) {
+        drawUniversalExit();
+    }
+
     handleTransition();
 }
 
@@ -196,6 +281,9 @@ function handleTransition() {
 function mousePressed() {
     if (isFading) return; // ignora cliques durante fade
 
+    if (gameState.startsWith("TAREFA")) {
+        if (checkUniversalExit()) return; // Se clicou no botão sair, pára de ler o resto!
+    }
     if (gameState === "MENU") {
         if (
             mouseX > startBtn.x - startBtn.w / 2 && mouseX < startBtn.x + startBtn.w / 2 &&
@@ -230,8 +318,9 @@ function mousePressed() {
     } 
     else if (gameState === "TAREFA8") {
         mousePressedTarefa8();
-    }
-}
+    }else if (gameState === "VITORIA") { // <--- NOVO
+        handleVitoriaClick();
+}}
 
 function keyPressed() {
     if (gameState === "TAREFA3") {

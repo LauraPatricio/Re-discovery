@@ -1,5 +1,6 @@
 // quarto.js
-let bgQuartoImg; // Usei um nome diferente para evitar conflitos
+let bgQuartoImg; 
+let bgQuarto2Img; // --- NOVO: Variável para o quarto final ---
 
 const OCULOS = {
     relX: 0.8,
@@ -10,9 +11,8 @@ const OCULOS = {
 
 function preloadQuarto() {
     bgQuartoImg = loadImage('imagens/quarto_1_.png');
+    bgQuarto2Img = loadImage('imagens/quarto_2.png'); // Carrega a imagem final
 }
-
-// quarto.js
 
 function drawQuartoScreen() {
     image(bgQuartoImg, 0, 0, width, height);
@@ -32,24 +32,16 @@ function drawQuartoScreen() {
     push();
     rectMode(CENTER);
 
-    // 1. REMOÇÃO DA SHADOW:
-    // Removi as linhas que definiam drawingContext.shadowBlur e shadowColor
-
-    // 2. DEFINIÇÃO DAS CORES (Verde: rgb(0, 255, 0))
     if (oculosHover) {
-        // Com Hover: Linha verde e Fundo verde com 35% de opacidade (aprox. 89 em escala de 255)
         stroke(0, 255, 0);
         fill(0, 255, 0, 89);
     } else {
-        // Sem Hover: Apenas linha verde, sem preenchimento
         stroke(0, 255, 0);
         noFill();
     }
 
-    // Desenha o retângulo
     strokeWeight(2);
     rect(ox, oy, ow, oh, 6);
-
     pop();
 }
 
@@ -63,4 +55,15 @@ function handleQuartoClick() {
         mouseY > oy - oh / 2 && mouseY < oy + oh / 2) {
         goTo("LIVRO");
     }
+}
+
+// ─── NOVO: ECRÃ DE VITÓRIA (QUARTO 2) ─────────────────────────
+function drawVitoriaScreen() {
+    // Desenha o quarto 2 limpo, sem retângulos verdes!
+    image(bgQuarto2Img, 0, 0, width, height);
+}
+
+function handleVitoriaClick() {
+    // Faz um refresh à página inteira para recomeçar o jogo do zero
+    location.reload(); 
 }
