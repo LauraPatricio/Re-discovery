@@ -82,7 +82,7 @@ function drawTarefa3() {
     } else if (tarefa3State === 'GAMEOVER') {
         showGameOver3();
     } else if (tarefa3State === 'WIN') {
-        showWinScreen3();
+        showWinScreenUniform();
     }
 
     pop(); // Terminamos o truque da escala aqui!
@@ -104,16 +104,27 @@ function showGameOver3() {
     text("RETRY? Press Space", WIDE_WIDTH / 2, WIDE_HEIGHT / 2);
 }
 
-function showWinScreen3() {
-    fill(0, 255, 255, 200);
+function showWinScreenUniform() {
+    fill(0, 0, 0, 200);
     rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
-    fill(255);
+    
+    push();
     textAlign(CENTER, CENTER);
-    textSize(40);
-    text("MEMORY FRAGMENT RECOVERED!", WIDE_WIDTH / 2, WIDE_HEIGHT / 2 - 20);
-    textSize(20);
-    text("SYNCING...", WIDE_WIDTH / 2, WIDE_HEIGHT / 2 + 30); // Substitui o "Press space to continue"
+    textFont('Impact');
+    drawingContext.shadowBlur = 15;
+    drawingContext.shadowColor = color(0, 255, 100);
+    
+    fill(0, 255, 100);
+    textSize(popW * 0.08); // Tamanho consistente com a Tarefa 1
+    text("IDENTITY RECOVERED", WIDE_WIDTH / 2, WIDE_HEIGHT / 2);
+    
+    noAlpha(); // Reset shadow
+    textSize(popW * 0.03);
+    fill(255);
+    text("MEMORY SYNCED...", WIDE_WIDTH / 2, WIDE_HEIGHT / 2 + 60);
+    pop();
 }
+
 
 // Em vez da genérica keyPressed, criamos uma específica
 function keyPressedTarefa3() {

@@ -65,7 +65,7 @@ function drawTarefa4() {
   } else if (tarefa4State === 'GAMEOVER') {
     showGameOver4();
   } else if (tarefa4State === 'WIN') {
-    showWinScreen4();
+    showWinScreenUniform();
   }
   
   pop(); // Fim da escala
@@ -94,15 +94,25 @@ function showGameOver4() {
   text("Press Space to Reboot", WIDE_WIDTH / 2, WIDE_HEIGHT / 2 + 50);
 }
 
-function showWinScreen4() {
-  fill(0, 255, 255, 200);
-  rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
-  fill(255);
-  textAlign(CENTER, CENTER);
-  textSize(40);
-  text("MEMORY RECOVERED", WIDE_WIDTH / 2, WIDE_HEIGHT / 2);
-  textSize(20);
-  text("SYNCING...", WIDE_WIDTH / 2, WIDE_HEIGHT / 2 + 50);
+function showWinScreenUniform() {
+    fill(0, 0, 0, 200);
+    rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
+    
+    push();
+    textAlign(CENTER, CENTER);
+    textFont('Impact');
+    drawingContext.shadowBlur = 15;
+    drawingContext.shadowColor = color(0, 255, 100);
+    
+    fill(0, 255, 100);
+    textSize(popW * 0.08); // Tamanho consistente com a Tarefa 1
+    text("IDENTITY RECOVERED", WIDE_WIDTH / 2, WIDE_HEIGHT / 2);
+    
+    noAlpha(); // Reset shadow
+    textSize(popW * 0.03);
+    fill(255);
+    text("MEMORY SYNCED...", WIDE_WIDTH / 2, WIDE_HEIGHT / 2 + 60);
+    pop();
 }
 
 function mousePressedTarefa4() {

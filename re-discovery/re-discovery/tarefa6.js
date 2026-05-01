@@ -3,8 +3,6 @@ let rocketImg6;
 let isDragging6 = false;
 let tarefa6State = "START"; 
 let pathPoints6 = [];
-
-// O buffer de deteção (reduzido de 30 para 25 para combinar com a nova janela)
 const tolerance6 = 25; 
 
 function preloadTarefa6() {
@@ -13,7 +11,6 @@ function preloadTarefa6() {
 }
 
 function setupTarefa6() {
-  // Pontos exatos já recalculados manualmente para o ecrã virtual 800x450!
   pathPoints6 = [
     { x: 140.6, y: 234.4 }, { x: 140.6, y: 195.3 }, { x: 156.3, y: 168.0 },
     { x: 179.7, y: 132.8 }, { x: 210.9, y: 125.0 }, { x: 234.4, y: 164.1 },
@@ -28,87 +25,110 @@ function setupTarefa6() {
 }
 
 function drawTarefa6() {
-  // ── EFEITO POP-UP ──
   image(bgNave, 0, 0, width, height); 
-  
   noStroke();
   fill(0, 0, 0, 180);
   rect(0, 0, width, height); 
 
-  // ── ESCALA PARA O POP-UP WIDESCREEN ──
   push();
   translate(widePopX, widePopY);
   scale(widePopW / WIDE_WIDTH, widePopH / WIDE_HEIGHT);
 
   imageMode(CORNER);
   image(bgImg6, 0, 0, WIDE_WIDTH, WIDE_HEIGHT);
-  
-  // Se quiseres ver a linha guia, retira as duas barras "//" na linha abaixo:
-  // drawDebugPath6(); 
 
   if (tarefa6State === "START") {
-    drawOverlay6("VOYAGER", "Hold the mouse to guide the rocket to the planet.");
+    drawOverlay6("VOYAGER", "HOLD MOUSE TO GUIDE ROCKET");
     drawRocket6(pathPoints6[0].x, pathPoints6[0].y);
   } 
   else if (tarefa6State === "PLAYING") {
     updateGame6();
   } 
   else if (tarefa6State === "FAIL") {
-    drawOverlay6("STRAYED FROM PATH", "Click the start to try again!");
+    // Integration: Using the uniform failure style concept
+    drawOverlay6("FAILED", "STRAYED FROM PATH - TRY AGAIN");
     drawRocket6(pathPoints6[0].x, pathPoints6[0].y);
   } 
   else if (tarefa6State === "WIN") {
-    drawOverlay6("MEMORY RECOVERED", "You've broken the trance!");
+    // Integration: Calling the new uniform win screen function
+    showWinScreenUniform();
   }
 
-  pop(); // Fim da escala
+  pop(); 
 }
 
-function drawDebugPath6() {
-  for (let p of pathPoints6) {
-    noFill();
-    stroke(255, 0, 0, 100); 
-    circle(p.x, p.y, tolerance6 * 2);
+// Updated Overlay to match uniform typography and neon style
+function drawOverlay6(title, subtitle) {
+  fill(0, 0, 0, 180);
+  rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
+  
+  push();
+  textAlign(CENTER, CENTER);
+  textFont('Impact'); // Uniform font
+  
+  // Title with Neon Glow
+  drawingContext.shadowBlur = 15;
+  drawingContext.shadowColor = (title === "FAILED") ? color(255, 0, 0) : color(0, 255, 255);
+  fill((title === "FAILED") ? color(255, 0, 0) : color(0, 255, 255)); 
+  textSize(45);
+  text(title, WIDE_WIDTH / 2, WIDE_HEIGHT / 2 - 30);
+  
+  // Subtitle
+  drawingContext.shadowBlur = 0;
+  fill(255);
+  textSize(20);
+  text(subtitle, WIDE_WIDTH / 2, WIDE_HEIGHT / 2 + 30);
+  pop();
+}
+
+// NEW: Uniform Win Screen Function added here for clarity
+function showWinScreenUniform() {
+    fill(0, 0, 0, 200);
+    rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
     
-    fill(255, 0, 0);
-    noStroke();
-    circle(p.x, p.y, 8);
-  }
+    push();
+    textAlign(CENTER, CENTER);
+    textFont('Impact');
+    drawingContext.shadowBlur = 15;
+    drawingContext.shadowColor = color(0, 255, 100); // Green Neon[cite: 1, 2]
+    
+    fill(0, 255, 100);
+    textSize(WIDE_WIDTH * 0.08); 
+    text("IDENTITY RECOVERED", WIDE_WIDTH / 2, WIDE_HEIGHT / 2);
+    
+    drawingContext.shadowBlur = 0; 
+    textSize(WIDE_WIDTH * 0.03);
+    fill(255);
+    text("MEMORY SYNCED...", WIDE_WIDTH / 2, WIDE_HEIGHT / 2 + 60);
+    pop();
 }
 
 function updateGame6() {
   if (isDragging6) {
-    // Cálculo do rato virtual devido à escala da janela
     let virtualMouseX = (mouseX - widePopX) / (widePopW / WIDE_WIDTH);
     let virtualMouseY = (mouseY - widePopY) / (widePopH / WIDE_HEIGHT);
 
     let minD = 1000;
-    // ver qual é o checkpoint mais perto do rato
     for (let p of pathPoints6) {
       let d = dist(virtualMouseX, virtualMouseY, p.x, p.y);
       if (d < minD) minD = d;
     }
 
-    // Se fugires da linha guia
     if (minD > tolerance6) {
       tarefa6State = "FAIL";
       isDragging6 = false; 
     }
 
-    // Quando chega ao final
     let endPoint = pathPoints6[pathPoints6.length - 1];
     if (dist(virtualMouseX, virtualMouseY, endPoint.x, endPoint.y) < 25) {
       tarefa6State = "WIN";
       isDragging6 = false;
-      
-      // --- VITÓRIA E DESBLOQUEIO ---
       TarefaConcluida.voyager = true; 
       setTimeout(() => {
           goTo("NAVE");
           resetGame6();
       }, 1500);
     }
-
     drawRocket6(virtualMouseX, virtualMouseY);
   }
 }
@@ -118,26 +138,11 @@ function drawRocket6(x, y) {
   image(rocketImg6, x, y, 60, 60);
 }
 
-function drawOverlay6(title, subtitle) {
-  fill(0, 0, 0, 180);
-  rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
-  
-  textAlign(CENTER, CENTER);
-  fill(0, 255, 255); 
-  textSize(40);
-  text(title, WIDE_WIDTH / 2, WIDE_HEIGHT / 2 - 30);
-  
-  fill(255);
-  textSize(20);
-  text(subtitle, WIDE_WIDTH / 2, WIDE_HEIGHT / 2 + 30);
-}
-
 function mousePressedTarefa6() {
   let virtualMouseX = (mouseX - widePopX) / (widePopW / WIDE_WIDTH);
   let virtualMouseY = (mouseY - widePopY) / (widePopH / WIDE_HEIGHT);
 
   if (tarefa6State === "START" || tarefa6State === "FAIL") {
-    // Verifica se clica perto da base do foguetão para arrancar
     if (dist(virtualMouseX, virtualMouseY, pathPoints6[0].x, pathPoints6[0].y) < 100) {
       tarefa6State = "PLAYING";
       isDragging6 = true;
@@ -149,7 +154,6 @@ function mousePressedTarefa6() {
 
 function mouseReleasedTarefa6() {
   if (tarefa6State === "PLAYING") {
-    // Se o jogador largar o rato a meio do caminho, falha a missão!
     tarefa6State = "FAIL";
     isDragging6 = false;
   }

@@ -60,7 +60,7 @@ function drawTarefa5() {
       }, 1500);
     }
   } else if (tarefa5State === 'WIN') {
-    showWinScreen5();
+    showWinScreenUniform();
   }
   
   pop(); // Fim da escala
@@ -86,16 +86,25 @@ function displayHUD5() {
   text("SYNC INSTRUMENTS: " + currentRing + " / " + GOAL5, 60, 60);
 }
 
-function showWinScreen5() {
-  fill(0, 0, 0, 200);
-  rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
-  fill(0, 255, 255);
-  textAlign(CENTER, CENTER);
-  textSize(40);
-  text("HARMONY RESTORED", WIDE_WIDTH / 2, WIDE_HEIGHT / 2);
-  textSize(20);
-  fill(255);
-  text("SYNCING...", WIDE_WIDTH / 2, WIDE_HEIGHT / 2 + 50);
+function showWinScreenUniform() {
+    fill(0, 0, 0, 200);
+    rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
+    
+    push();
+    textAlign(CENTER, CENTER);
+    textFont('Impact');
+    drawingContext.shadowBlur = 15;
+    drawingContext.shadowColor = color(0, 255, 100);
+    
+    fill(0, 255, 100);
+    textSize(popW * 0.08); // Tamanho consistente com a Tarefa 1
+    text("IDENTITY RECOVERED", WIDE_WIDTH / 2, WIDE_HEIGHT / 2);
+    
+    noAlpha(); // Reset shadow
+    textSize(popW * 0.03);
+    fill(255);
+    text("MEMORY SYNCED...", WIDE_WIDTH / 2, WIDE_HEIGHT / 2 + 60);
+    pop();
 }
 
 function mousePressedTarefa5() {

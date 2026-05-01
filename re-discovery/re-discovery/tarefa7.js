@@ -6,44 +6,44 @@ let discoveryVisible = false;
 let errorTimer = 0;
 let flashError = false;
 
-// Utilizamos o nosso WIDE_HEIGHT global em vez de GAME_HEIGHT
 const RING_X = 280; 
-const RING_Y = 450 / 2; // (WIDE_HEIGHT / 2)
+const RING_Y = 450 / 2; 
 const RING_RADIUS = 120;
 
 function setupTarefa7() {
-  // Define as posições das sílabas usando a proporção panorâmica
   syllables = [
-    { text: "VE", x: RING_X, y: RING_Y - 90, hit: false },     // Top
-    { text: "RI", x: RING_X + 90, y: RING_Y, hit: false },     // Right
-    { text: "DIS", x: RING_X, y: RING_Y + 90, hit: false },    // Bottom
-    { text: "QUO", x: RING_X - 80, y: RING_Y, hit: false }     // Left
+    { text: "VE", x: RING_X, y: RING_Y - 90, hit: false },
+    { text: "RI", x: RING_X + 90, y: RING_Y, hit: false },
+    { text: "DIS", x: RING_X, y: RING_Y + 90, hit: false },
+    { text: "QUO", x: RING_X - 80, y: RING_Y, hit: false }
   ];
 }
 
 function drawTarefa7() {
-  // ── EFEITO POP-UP ──
   image(bgNave, 0, 0, width, height); 
-  
   noStroke();
   fill(0, 0, 0, 180);
   rect(0, 0, width, height); 
 
-  // ── ESCALA PARA O POP-UP WIDESCREEN ──
   push();
   translate(widePopX, widePopY);
   scale(widePopW / WIDE_WIDTH, widePopH / WIDE_HEIGHT);
 
-  // Corrigido de 'bg' para 'bgImg7'
   imageMode(CORNER);
   image(bgImg4, 0, 0, WIDE_WIDTH, WIDE_HEIGHT);
 
   drawUIRing();
   drawSyllables();
   drawConnectionLine();
-  drawResultArea();
   
-  pop(); // Fim da escala
+  // Checking the state to determine if we show the result or the uniform win screen
+  if (discoveryVisible) {
+    showWinScreenUniform7();
+  } else {
+    drawResultArea();
+  }
+  
+  pop(); 
 }
 
 function drawUIRing() {
@@ -55,6 +55,7 @@ function drawUIRing() {
 
 function drawSyllables() {
   textAlign(CENTER, CENTER);
+  textFont('Impact'); // Uniform Font
   textSize(32);
   strokeWeight(2);
   
@@ -73,7 +74,6 @@ function drawSyllables() {
 
 function drawConnectionLine() {
   if (mouseIsPressed && playerPath.length > 0) {
-    // Calculamos o rato virtual para a linha desenhar no sítio certo!
     let virtualMouseX = (mouseX - widePopX) / (widePopW / WIDE_WIDTH);
     let virtualMouseY = (mouseY - widePopY) / (widePopH / WIDE_HEIGHT);
 
@@ -84,42 +84,70 @@ function drawConnectionLine() {
     for (let index of playerPath) {
       vertex(syllables[index].x, syllables[index].y);
     }
-    vertex(virtualMouseX, virtualMouseY); // Usa o rato virtual em vez do real
+    vertex(virtualMouseX, virtualMouseY); 
     endShape();
   }
 }
 
 function drawResultArea() {
   textAlign(CENTER, CENTER); 
+  textFont('Impact'); // Fonte uniforme para todo o sistema
   let displayX = 660; 
   
   if (flashError) {
+    // Estilo de Falha Uniforme:
+    push();
+    drawingContext.shadowBlur = 15;
+    drawingContext.shadowColor = color(255, 0, 0); // Brilho Neon Vermelho
     fill(255, 50, 50);
-    textSize(45);
-    drawingContext.shadowBlur = 10;
-    drawingContext.shadowColor = color(255, 50, 50);
-    text("ERROR", displayX, 230);
+    
+    // Tamanho proporcional ao pop-up (WIDE_WIDTH * 0.08) para impacto visual[cite: 1]
+    textSize(WIDE_WIDTH * 0.08); 
+    text("FAILED", displayX, 230); // Texto em CAIXA ALTA uniforme[cite: 1]
+    pop();
     
     errorTimer--;
-    if (errorTimer <= 0) flashError = false;
+    if (errorTimer <= 0) {
+      flashError = false;
+      resetAttempt();
+    }
     
   } else if (currentWord !== "") {
+    // Feedback visual de progresso (Neon Verde)[cite: 2]
+    push();
     fill(0, 255, 100);
     drawingContext.shadowBlur = 15;
     drawingContext.shadowColor = color(0, 255, 100);
     textSize(40);
-    text(currentWord, displayX, 230);
-  }
-
-  if (discoveryVisible) {
-    fill(255);
-    drawingContext.shadowColor = color(255);
-    textSize(50);
-    text("DISCOVERY", displayX, 300);
+    text(currentWord.toUpperCase(), displayX, 230); // UPPERCASE uniforme[cite: 1]
+    pop();
   }
   
-  drawingContext.shadowBlur = 0; 
+  drawingContext.shadowBlur = 0; // Reset do brilho para outros elementos
 }
+
+// Uniformized Win Screen for Tarefa 7[cite: 1]
+function showWinScreenUniform7() {
+    fill(0, 0, 0, 200);
+    rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
+    
+    push();
+    textAlign(CENTER, CENTER);
+    textFont('Impact');
+    drawingContext.shadowBlur = 15;
+    drawingContext.shadowColor = color(0, 255, 100);
+    
+    fill(0, 255, 100);
+    textSize(WIDE_WIDTH * 0.08); 
+    text("IDENTITY RECOVERED", WIDE_WIDTH / 2, WIDE_HEIGHT / 2);
+    
+    drawingContext.shadowBlur = 0; 
+    textSize(WIDE_WIDTH * 0.03);
+    fill(255);
+    text("DISCOVERY COMPLETE", WIDE_WIDTH / 2, WIDE_HEIGHT / 2 + 60);
+    pop();
+}
+
 
 function mousePressedTarefa7() {
   if (!discoveryVisible) {
