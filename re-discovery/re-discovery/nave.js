@@ -1,188 +1,164 @@
-// cores personagens
-let corA, corB, corO, corS;
-
-
 // Saber qual personagem foi clicado no menu de personagens
 let personagemAtual = "";
 
+// Estado das Tarefas
 let TarefaConcluida = {
-    aerodynamic: false,
-    crescendolls: false,
-    some: false,
-    super: false,
-    veridis: false,
-    voyager: false,
-    harder: false,
-    one: false
-}
+    aerodynamic: false, crescendolls: false, some: false, super: false,
+    veridis: false, voyager: false, harder: false, one: false
+};
+
+// Botões Ativos na Nave
 let btnNave = {
-    btnAerodynamic: false,
-    btnCrescendolls: false,
-    btnSome: false,
-    btnSuper: false,
-    btnVeridis: false,
-    btnVoyager: false,
-    btnHarder: false,
-    btnOne: false,
+    btnAerodynamic: false, btnCrescendolls: false, btnSome: false, btnSuper: false,
+    btnVeridis: false, btnVoyager: false, btnHarder: false, btnOne: false
+};
+
+// Dicionários para guardar as imagens carregadas
+let buttonLine = {};
+let buttonHover = {};
+let buttonConc = {};
+
+// Lista única com os nomes base dos ficheiros
+let svgNames = ["Aerodynamic", "Crescendolls", "Some", "Super", "Veridis", "Voyager", "Harder", "One"];
+
+function preloadNave() {
+    for (let nome of svgNames) {
+        buttonLine[nome] = loadImage('imagens/btn' + nome + 'Line.svg');
+        buttonHover[nome] = loadImage('imagens/btn' + nome + 'Hover.svg');
+        buttonConc[nome] = loadImage('imagens/btn' + nome + 'Conc.svg');
+    }
 }
 
 function drawNave() {
     background(0);
-    image(bgNave, 0, 0, width, height);
+    push(); // <-- ABRE AQUI O BLOCO DA ESCALA
+    scale(scaleRatioNave);
+    imageMode(CORNER);
+    image(bgNave, 0, 0);
 
-    corB = color(80, 229, 255);
-    corA = color(62, 255, 81);
-    corO = color(255, 75, 180);
-    corS = color(15, 239, 183);
+    // --- DESENHAR OS BOTÕES ---
+    drawBtnImagem(699, 805, btnNave.btnVoyager, TarefaConcluida.voyager, buttonLine["Voyager"], buttonHover["Voyager"], buttonConc["Voyager"]);
+    drawBtnImagem(1090, 906, btnNave.btnCrescendolls, TarefaConcluida.crescendolls, buttonLine["Crescendolls"], buttonHover["Crescendolls"], buttonConc["Crescendolls"]);
+    drawBtnImagem(1180, 909, btnNave.btnAerodynamic, TarefaConcluida.aerodynamic, buttonLine["Aerodynamic"], buttonHover["Aerodynamic"], buttonConc["Aerodynamic"]);
+    drawBtnImagem(946, 830, btnNave.btnHarder, TarefaConcluida.harder, buttonLine["Harder"], buttonHover["Harder"], buttonConc["Harder"]);
+    drawBtnImagem(1180, 767, btnNave.btnSuper, TarefaConcluida.super, buttonLine["Super"], buttonHover["Super"], buttonConc["Super"]);
+    drawBtnImagem(1292, 837, btnNave.btnVeridis, TarefaConcluida.veridis, buttonLine["Veridis"], buttonHover["Veridis"], buttonConc["Veridis"]);
+    drawBtnImagem(1184, 839, btnNave.btnSome, TarefaConcluida.some, buttonLine["Some"], buttonHover["Some"], buttonConc["Some"]);
+    drawBtnImagem(522, 850, btnNave.btnOne, TarefaConcluida.one, buttonLine["One"], buttonHover["One"], buttonConc["One"]);
 
-    drawBtnTarefas(width / 6, height / 2, 20, 10, btnNave.btnVoyager, corB)
-    drawBtnTarefas(width / 3, height / 2, 20, 10, btnNave.btnCrescendolls, corB);
-    drawBtnTarefas(width/16, height / 2, 20, 10, btnNave.btnAerodynamic, corA)
-    drawBtnTarefas(width / 2, height / 2, 20, 10, btnNave.btnHarder, corA);
-    drawBtnTarefas(width / 4, height / 2, 20, 10, btnNave.btnSuper, corO)
-    drawBtnTarefas(width / 7, height / 2, 20, 10, btnNave.btnVeridis, corO);
-    drawBtnTarefas(width / 5, height / 2, 20, 10, btnNave.btnSome, corS)
-    drawBtnTarefas(width / 8, height / 2, 20, 10, btnNave.btnOne, corS);
+    pop(); // <-- FECHA AQUI O BLOCO DA ESCALA! Tudo o que está cá dentro mexeu-se por igual.
 
-    verificarProgressoNave()
+    verificarProgressoNave();
 }
 
-function drawBtnTarefas(x, y, w, h, isUnlocked, cor) {
-    // 1. Verificar se o mouse está sobre ESTE botão específico
-    let over = mouseX > x - w / 2 && mouseX < x + w / 2 && mouseY > y - h / 2 && mouseY < y + h / 2;
+/**
+ * Função desenhar os botões SVG com tamanhos automáticos e rato virtual
+ */
+function drawBtnImagem(x, y, isUnlocked, isConcluded, imgLine, imgHover, imgConc) {
 
-    if (isUnlocked) {
-        let c = color(cor);
+    // --- NOVO: Fator de Ajuste de Tamanho ---
+    // 1.0 = tamanho original. 1.015 = 1.5% maior. 1.5 = 50% maior. 0.8 = 20% mais pequeno.
+    // Podes alterar este número livremente até os botões ficarem perfeitos visualmente!
+    let fatorAjuste = 1.22;
 
+    // Calculamos a largura (w) e altura (h) multiplicadas pelo nosso fator
+    let w = imgLine.width * fatorAjuste;
+    let h = imgLine.height * fatorAjuste;
+
+    // O rato virtual (mantém-se igual, ele entende o zoom do ecrã)
+    let virtualMouseX = mouseX / scaleRatioNave;
+    let virtualMouseY = mouseY / scaleRatioNave;
+
+    // A área de colisão agora usa a nova largura (w) e altura (h) ajustadas
+    let over = virtualMouseX > x - w / 2 && virtualMouseX < x + w / 2 && virtualMouseY > y - h / 2 && virtualMouseY < y + h / 2;
+
+    push();
+    imageMode(CENTER);
+
+    if (isConcluded) {
+        image(imgConc, x, y, w, h);
+    }
+    else if (isUnlocked) {
         if (over) {
             cursor(HAND);
-            push();
-            rectMode(CENTER);
-            fill(red(c), green(c), blue(c), 89);
-            noStroke();
-            rect(x, y, w, h);
-            pop();
+            image(imgHover, x, y, w, h);
+        } else {
+            image(imgLine, x, y, w, h);
         }
-
-        push();
-        rectMode(CENTER);
-        stroke(c);
-        strokeWeight(2); // Diminuído para não "comer" o botão
-        noFill();
-        rect(x, y, w, h);
-        pop();
-    } else {
-        // Botão bloqueado
-        push();
-        rectMode(CENTER);
-        stroke(100); // Cinza para indicar bloqueado
-        strokeWeight(1);
-        noFill();
-        rect(x, y, w, h);
-        // Opcional: um X pequeno para indicar bloqueio
-        line(x - 5, y - 5, x + 5, y + 5);
-        pop();
     }
-}
 
-// nave.js
+
+    pop();
+}
 
 // Configura quais botões aparecem dependendo do personagem
 function configurarBotoesNave() {
-    // Desliga todos primeiro
     for (let key in btnNave) { btnNave[key] = false; }
 
     if (personagemAtual === "BARYL") {
-        btnNave.btnAerodynamic = true;
-        btnNave.btnHarder = true;
-    } else if (personagemAtual === "ARPEGIUS") {
-        btnNave.btnCrescendolls = true;
-        btnNave.btnSuper = true;
-    } else if (personagemAtual === "OCTAVE") {
-        // --- ADICIONADO AQUI: Liga os botões do Octave ---
-        btnNave.btnSome = true;
         btnNave.btnVoyager = true;
-    } else if (personagemAtual === "STELLA") {
-        // --- ADICIONADO AQUI: Já fica pronto para a Stella! ---
+        btnNave.btnCrescendolls = true;
+    } else if (personagemAtual === "ARPEGIUS") {
+        btnNave.btnHarder = true;
+        btnNave.btnAerodynamic = true;
+    } else if (personagemAtual === "OCTAVE") {
+        btnNave.btnSuper = true;
         btnNave.btnVeridis = true;
+    } else if (personagemAtual === "STELLA") {
+        btnNave.btnSome = true;
         btnNave.btnOne = true;
     }
 }
 
 // Verifica se o personagem terminou as suas duas tarefas
-//Corrigir ordem das tarefas depois 
 function verificarProgressoNave() {
-    if (personagemAtual === "BARYL") {
-        if (TarefaConcluida.aerodynamic && TarefaConcluida.harder) {
-            personagensStatus.arpegius = true;
-            goTo("MENU_PERSONAGENS");
-            personagemAtual = "";
-        }
+    if (personagemAtual === "BARYL" && TarefaConcluida.voyager && TarefaConcluida.crescendolls) {
+        personagensStatus.arpegius = true;
+        goTo("MENU_PERSONAGENS");
+        personagemAtual = "";
     }
-    else if (personagemAtual === "ARPEGIUS") { // Nome corrigido aqui
-        if (TarefaConcluida.crescendolls && TarefaConcluida.super) { // Tarefas corretas aqui
-            personagensStatus.octave = true;
-            goTo("MENU_PERSONAGENS");
-            personagemAtual = "";
-        }
+    else if (personagemAtual === "ARPEGIUS" && TarefaConcluida.aerodynamic && TarefaConcluida.harder) {
+        personagensStatus.octave = true;
+        goTo("MENU_PERSONAGENS");
+        personagemAtual = "";
     }
-    else if (personagemAtual === "OCTAVE") {
-        if (TarefaConcluida.some && TarefaConcluida.voyager) {
-            // Desbloqueia próximo personagem (Stella)
-            personagensStatus.stella = true;
-            goTo("MENU_PERSONAGENS");
-            personagemAtual = ""; // Limpa para não repetir
-        }
+    else if (personagemAtual === "OCTAVE" && TarefaConcluida.super && TarefaConcluida.veridis) {
+        personagensStatus.stella = true;
+        goTo("MENU_PERSONAGENS");
+        personagemAtual = "";
     }
-    else if (personagemAtual === "STELLA") {
-        if (TarefaConcluida.veridis && TarefaConcluida.one) {
-            personagensStatus.stella = true;
-          goTo("VITORIA");
-        }
+    else if (personagemAtual === "STELLA" && TarefaConcluida.some && TarefaConcluida.one) {
+        personagensStatus.stella = true;
+        goTo("VITORIA");
     }
-
 }
 
-// Chamar esta função no mousePressed do menu.js quando gameState === "NAVE"
+// Lógica de clique na Nave com tamanhos automáticos e rato virtual
 function handleNaveClick() {
-    let w = 20; // Largura do botão no teu código
-    let h = 10; // Altura do botão no teu código
 
-    function clickBtn(x, y) {
-        return mouseX > x - w / 2 && mouseX < x + w / 2 && mouseY > y - h / 2 && mouseY < y + h / 2;
+    let virtualMouseX = mouseX / scaleRatioNave;
+    let virtualMouseY = mouseY / scaleRatioNave;
+
+    function clickBtn(x, y, img) {
+        // --- NOVO: O clique também precisa de saber o fator de ajuste! ---
+        // Tem de ser exatamente o mesmo número que usaste no drawBtnImagem acima.
+        let fatorAjuste = 1.22;
+
+        let w = img.width * fatorAjuste;
+        let h = img.height * fatorAjuste;
+
+        return virtualMouseX > x - w / 2 && virtualMouseX < x + w / 2 && virtualMouseY > y - h / 2 && virtualMouseY < y + h / 2;
     }
 
-    // Se o botão Aerodynamic (Tarefa 1) está ativo, não foi concluído e foi clicado
-    if (btnNave.btnAerodynamic && !TarefaConcluida.aerodynamic && clickBtn(width/16, height / 2)) {
-        goTo("TAREFA1");
-    }
-
-    // Se o botão Harder (Tarefa 2) está ativo, não foi concluído e foi clicado
-    if (btnNave.btnHarder && !TarefaConcluida.harder && clickBtn(width / 2, height / 2)) {
-        goTo("TAREFA2");
-    }
-
-    if (btnNave.btnCrescendolls && !TarefaConcluida.crescendolls && clickBtn(width / 3, height / 2)) {
-        goTo("TAREFA3");
-    }
-
-    if (btnNave.btnSuper && !TarefaConcluida.super && clickBtn(width / 4, height / 2)) {
-        goTo("TAREFA4");
-    }
-
-    if (btnNave.btnSome && !TarefaConcluida.some && clickBtn(width / 5, height / 2)) {
-        goTo("TAREFA5");
-    }
-
-    if (btnNave.btnVoyager && !TarefaConcluida.voyager && clickBtn(width / 6, height / 2)) {
-        goTo("TAREFA6");
-    }
-
-    if (btnNave.btnVeridis && !TarefaConcluida.veridis && clickBtn(width / 7, height / 2)) {
-        goTo("TAREFA7");
-    }
-
-      if (btnNave.btnOne && !TarefaConcluida.one && clickBtn(width / 8, height / 2)) {
-        goTo("TAREFA8");
-    }
+    // Os teus botões com as posições originais.
+    if (btnNave.btnVoyager && !TarefaConcluida.voyager && clickBtn(699, 805, buttonLine["Voyager"])){
+     goTo("TAREFA6");   
+    } 
+    if (btnNave.btnCrescendolls && !TarefaConcluida.crescendolls && clickBtn(1090, 906, buttonLine["Crescendolls"])) goTo("TAREFA3");
+    if (btnNave.btnAerodynamic && !TarefaConcluida.aerodynamic && clickBtn(1180, 909, buttonLine["Aerodynamic"])) goTo("TAREFA1");
+    if (btnNave.btnHarder && !TarefaConcluida.harder && clickBtn(946, 830, buttonLine["Harder"])) goTo("TAREFA2");
+    if (btnNave.btnSuper && !TarefaConcluida.super && clickBtn(1180, 767, buttonLine["Super"])) goTo("TAREFA4");
+    if (btnNave.btnVeridis && !TarefaConcluida.veridis && clickBtn(1292, 837, buttonLine["Veridis"])) goTo("TAREFA7");
+    if (btnNave.btnSome && !TarefaConcluida.some && clickBtn(1184, 839, buttonLine["Some"])) goTo("TAREFA5");
+    if (btnNave.btnOne && !TarefaConcluida.one && clickBtn(522, 850, buttonLine["One"])) goTo("TAREFA8");
 }

@@ -1,4 +1,5 @@
 //imagens
+let disco={};
 let imgBaryl, imgArpegius, imgOctave, imgStella;
 let bgNave;
 
@@ -21,11 +22,17 @@ function preloadMenuPerson(){
     imgOctave = loadImage('imagens/octave.png');
     imgStella = loadImage('imagens/stella.png');
     bgNave = loadImage('imagens/nave.png');
+
+    for (let i = 1; i <= 4; i++) {
+        buttonLine[i] = loadImage('imagens/disco' + i + 'Line.svg');
+        buttonHover[i] = loadImage('imagens/btn' + i + 'Hover.svg');
+        buttonConc[i] = loadImage('imagens/btn' + i + 'Conc.svg');
+    }
 }
 
 function drawMenuPersonagens() {
-    background(0);
-    image(bgNave, 0, 0, width, height);
+    background(0);.
+    image(bgMenu, 0, 0, width, height);
 
     //Camada Opacidade
     noStroke();

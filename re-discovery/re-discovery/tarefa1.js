@@ -76,8 +76,10 @@ function initializeGrids() {
 function drawTarefa1() {
     // ── EFEITO POP-UP ──
     // 1. Desenha a nave no fundo
-    image(bgNave, 0, 0, width, height);
-
+   push();
+    imageMode(CENTER);
+    image(bgNave, width/2, height/2,naveNewW, naveNewH );
+    pop();
     // 2. Película escura
     noStroke();
     fill(0, 0, 0, 180);

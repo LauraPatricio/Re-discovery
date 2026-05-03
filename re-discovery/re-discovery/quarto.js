@@ -15,7 +15,7 @@ function preloadQuarto() {
 }
 
 function drawQuartoScreen() {
-    image(bgQuartoImg, 0, 0, width, height);
+    image(bgQuartoImg, 0, 0, quartoNewW,quartoNewH);
 
     let ox = width  * OCULOS.relX;
     let oy = height * OCULOS.relY;
@@ -60,7 +60,7 @@ function handleQuartoClick() {
 // ─── NOVO: ECRÃ DE VITÓRIA (QUARTO 2) ─────────────────────────
 function drawVitoriaScreen() {
     // Desenha o quarto 2 limpo, sem retângulos verdes!
-    image(bgQuarto2Img, 0, 0, width, height);
+    image(bgQuarto2Img, 0, 0,quartoNewW, quartoNewH);
 }
 
 function handleVitoriaClick() {
