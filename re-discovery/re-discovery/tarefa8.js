@@ -31,7 +31,10 @@ function setupTarefa8() {
 
 function drawTarefa8() {
   // ── EFEITO POP-UP ──
-  image(bgNave, 0, 0, width, height); 
+  push();
+  imageMode(CENTER);
+  image(bgNave, width / 2, height / 2, naveNewW, naveNewH);
+  pop();
   
   noStroke();
   fill(0, 0, 0, 180);

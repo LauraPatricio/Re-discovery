@@ -16,7 +16,6 @@ let t2_popX, t2_popY, t2_popW, t2_popH;
 function preloadTarefa2() {
     bgImg2 = loadImage('imagens/tarefa2.png');
     for (let word of words) {
-        // Presumo que as imagens das palavras também estejam na pasta imagens
         buttonImages[word] = loadImage('imagens/' + word + '.png');
     }
 }
@@ -67,7 +66,10 @@ function initializeButtonsTarefa2() {
 
 function drawTarefa2() {
     // ── EFEITO POP-UP ──
-    image(bgNave, 0, 0, width, height); // Fundo da nave
+    push();
+    imageMode(CENTER);
+    image(bgNave, width/2, height/2,naveNewW, naveNewH );
+    pop();
 
     noStroke();
     fill(0, 0, 0, 180);

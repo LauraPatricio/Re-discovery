@@ -1,30 +1,34 @@
-// ─────────────────────────────────────────────
-//  ESTADOS DO JOGO
-//  "MENU"  →  "QUARTO"  →  "PROXIMA_CENA"
-// ─────────────────────────────────────────────
-
-let bgMenu,exitImg;;
+let bgMenu, exitImg, logo;
 let gameState = "MENU";
 let startBtn, aboutBtn;
 
+// Apenas declaramos as variáveis aqui (as contas serão feitas mais tarde)
+let scaleRatioMenu, scaleRatioQuarto, scaleRatioNave;
+let naveNewW, naveNewH, menuNewW, menuNewH, quartoNewW, quartoNewH;
 
-// Variáveis da transição (fade a preto)
+// Variáveis da transição (fade a preto e noise)
 let fadeAlpha = 0;
 let isFading = false;
 let nextState = "";
+let transitionType = "NONE"; // Começa sem transição
+let noiseDuration = 30;      // Duração da estática (30 frames = aprox. meio segundo)
+let noiseCounter = 0;
 
-//proporção popup
+// Proporção popup
 let widePopX, widePopY, widePopW, widePopH;
 const WIDE_WIDTH = 800;
 const WIDE_HEIGHT = 450;
+
 
 // ── Preload ───────────────────────────────────
 function preload() {
     bgMenu = loadImage('imagens/fundo.png');
     exitImg = loadImage('imagens/Exit.png');
-    preloadQuarto(); // ← adiciona isto
+    logo = loadImage('imagens/logo.png');
+    preloadQuarto();
     preloadLivro();
     preloadMenuPerson();
+    preloadNave();
     preloadTarefa1();
     preloadTarefa2();
     preloadTarefa3();
@@ -33,9 +37,14 @@ function preload() {
     preloadTarefa6();
     preloadTarefa8();
 }
+
 // ── Setup ─────────────────────────────────────
 function setup() {
     createCanvas(windowWidth, windowHeight);
+    
+    // --- NOVO: Calculamos os fundos logo que o jogo arranca ---
+    calcularTamanhosFundo(); 
+    
     calcularPopUpWide();
     initButtons();
     setupTarefa1();
@@ -48,34 +57,43 @@ function setup() {
     setupTarefa8();
 }
 
-// ─── BOTÃO EXIT UNIVERSAL ─────────────────────────────
+// --- NOVA FUNÇÃO: Faz os cálculos matemáticos apenas quando o p5.js está pronto ---
+function calcularTamanhosFundo() {
+    scaleRatioMenu = max(width / bgMenu.width, height / bgMenu.height);
+    scaleRatioQuarto = max(width / bgQuartoImg.width, height / bgQuartoImg.height);
+    scaleRatioNave = max(width / bgNave.width, height / bgNave.height);
 
+    naveNewW = bgNave.width * scaleRatioNave;
+    naveNewH = bgNave.height * scaleRatioNave;
+    menuNewW = bgMenu.width * scaleRatioMenu;
+    menuNewH = bgMenu.height * scaleRatioMenu;
+    quartoNewW = bgQuartoImg.width * scaleRatioQuarto;
+    quartoNewH = bgQuartoImg.height * scaleRatioQuarto;
+}
+
+// ─── BOTÃO EXIT UNIVERSAL ─────────────────────────────
 function drawUniversalExit() {
     let px, py, pw;
-    
-    // Deteta qual é o tamanho de pop-up que estamos a usar
 
-    //AJEITAR LUGAR DO BOTAO_____________________________________________________
-    //AJEITAR BOTAO NA TAREFA 1 ___________________________________________________________________________
-
-
-    if (gameState === "TAREFA1") { px = popX+25; py = popY+20; pw = popW; }
+    // Ajusta o botão com base na tarefa em que estamos
+    if (gameState === "TAREFA1") { px = popX; py = popY; pw = popW; }
     else if (gameState === "TAREFA2") { px = t2_popX; py = t2_popY; pw = t2_popW; }
     else { px = widePopX; py = widePopY; pw = widePopW; }
 
-    let size = width * 0.025; // Tamanho responsivo do botão
-    let ex = px + pw;        // Posição X (Canto superior direito)
-    let ey = py;             // Posição Y (Canto superior direito)
+    // --- CORREÇÃO: Variáveis uniformizadas ---
+    let size = width * 0.025; 
+    let ex = px + pw + 25; // Posição X com o ajuste de + 8        
+    let ey = py;          
 
     push();
     imageMode(CENTER);
-    
-    // Efeito de passar o rato por cima (Hover)
+
+    // Efeito de passar o rato por cima (Hover) usa exatamente as mesmas variáveis
     if (dist(mouseX, mouseY, ex, ey) < size / 2) {
         cursor(HAND);
         tint(255, 150, 150); // Fica ligeiramente vermelho
     }
-    
+
     image(exitImg, ex, ey, size, size);
     pop();
 }
@@ -86,21 +104,21 @@ function checkUniversalExit() {
     else if (gameState === "TAREFA2") { px = t2_popX; py = t2_popY; pw = t2_popW; }
     else { px = widePopX; py = widePopY; pw = widePopW; }
 
-    let size = width * 0.03;
-    let ex = px + pw;
+    // --- CORREÇÃO: Variáveis copiadas do drawUniversalExit para baterem certo ---
+    let size = width * 0.025; 
+    let ex = px + pw + 25; // Adicionado o + 8 que faltava!
     let ey = py;
 
     // Se o clique foi em cima da bola de Exit
     if (dist(mouseX, mouseY, ex, ey) < size / 2) {
-        resetCurrentTask(); // Limpa o jogo antes de sair
-        goTo("NAVE");       // Volta à nave
-        return true;        // Confirma que o clique foi processado
+        resetCurrentTask(); 
+        goTo("NAVE");       
+        return true;        
     }
     return false;
 }
 
 function resetCurrentTask() {
-    // Faz reset específico dependendo da tarefa em que estavas
     if (gameState === "TAREFA1") {
         gameStatus = "";
         gameStarted = false;
@@ -114,11 +132,10 @@ function resetCurrentTask() {
     else if (gameState === "TAREFA4") { resetGame4(); }
     else if (gameState === "TAREFA5") { resetGame5(); }
     else if (gameState === "TAREFA6") { resetGame6(); }
-    else if (gameState === "TAREFA7") { 
-        // Reset manual para a tarefa 7, visto que algumas vars não estão na func de reset
-        resetAttempt(); 
-        discoveryVisible = false; 
-        flashError = false; 
+    else if (gameState === "TAREFA7") {
+        resetAttempt();
+        discoveryVisible = false;
+        flashError = false;
     }
     else if (gameState === "TAREFA8") { resetTarefa8(); }
 }
@@ -127,25 +144,26 @@ function calcularPopUpWide() {
     widePopW = width * 0.65;
     widePopH = widePopW * (WIDE_HEIGHT / WIDE_WIDTH);
 
-    // Se a altura ultrapassar o ecrã, escala pela altura
     if (widePopH > height * 0.65) {
         widePopH = height * 0.65;
         widePopW = widePopH * (WIDE_WIDTH / WIDE_HEIGHT);
     }
 
-    // Centrar no ecrã
     widePopX = (width - widePopW) / 2;
     widePopY = (height - widePopH) / 2;
 }
-//__ Reajustar tamanho ____________________________
 
+//__ Reajustar tamanho ____________________________
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
-    calcularPopUpWide(); // Recalcula o pop-up ao mudar o tamanho da janela
+    
+    // --- NOVO: Recalcula os fundos se o utilizador aumentar ou encolher a janela! ---
+    calcularTamanhosFundo(); 
+    
+    calcularPopUpWide(); 
     initButtons();
     windowResizedTarefa1();
     windowResizedTarefa2();
-
 }
 
 // ── Botões responsivos ─────────────────────────
@@ -164,16 +182,13 @@ function initButtons() {
 
 // ── Loop principal ────────────────────────────
 function draw() {
-    // Reset do cursor a cada frame
-    if (!isFading) cursor(ARROW);
-    
+    if (transitionType !== "NOISE" && !isFading) cursor(ARROW);
 
     if (gameState === "MENU") {
         drawMenu();
     } else if (gameState === "QUARTO") {
-        drawQuartoScreen(); // definido em quarto.js
+        drawQuartoScreen(); 
     } else if (gameState === "LIVRO") {
-        // Placeholder – substitui pela função da cena seguinte
         drawLivroScreen();
     } else if (gameState === "MENU_PERSONAGENS") {
         drawMenuPersonagens();
@@ -193,11 +208,9 @@ function draw() {
         drawTarefa6();
     } else if (gameState === "TAREFA7") {
         drawTarefa7();
-    } 
-    else if (gameState === "TAREFA8") {
+    } else if (gameState === "TAREFA8") {
         drawTarefa8();
-    }
-    else if (gameState === "VITORIA") { // <--- NOVO
+    } else if (gameState === "VITORIA") { 
         drawVitoriaScreen();
     }
 
@@ -210,13 +223,19 @@ function draw() {
 
 // ── Menu ──────────────────────────────────────
 function drawMenu() {
-    image(bgMenu, 0, 0, width, height);
+    let sizelogo = windowWidth / 2600;
+
+    image(bgMenu, 0, 0, menuNewW, menuNewH);
+    
+    push();
+    imageMode(CENTER);
+    image(logo, width / 2, height * 0.4, logo.width * sizelogo, logo.height * sizelogo);
+    pop();
 
     textAlign(CENTER, CENTER);
     textFont('Impact');
     fill(255);
     textSize(width * 0.06);
-    text("RE-DISCOVERY", width * 0.5, height * 0.4);
 
     updateButton(startBtn);
     updateButton(aboutBtn);
@@ -249,58 +268,100 @@ function drawButton(btn) {
     pop();
 }
 
-// ── Transição (fade a preto) ──────────────────
-// menu.js - Novas variáveis de controle
-let transitionType = "FADE"; // Pode ser "FADE" ou "NOISE"
-let noiseDuration = 45;      // Aproximadamente 0.7 segundos
-let noiseCounter = 0;
-// menu.js
+// ── Sistema Dinâmico de Transições ──────────────────
+// --- NOVO: Função goTo atualizada para gerir múltiplos efeitos ---
+function goTo(novoEstado, tipo = "NONE") {
+    nextState = novoEstado;
+    transitionType = tipo;
 
-
-// Função para transição instantânea (sem fade)
-function goTo(novoEstado) {
-    gameState = novoEstado; // Muda a cena instantaneamente
-}
-function handleTransition() {
-    if (isFading) {
-        fadeAlpha += 5; //fade out
-        if (fadeAlpha >= 255) {
-            gameState = nextState;
-            isFading = false;
-        }
-    } else if (fadeAlpha > 0) {
-        fadeAlpha -= 5; //fade in
+    if (tipo === "FADE") {
+        isFading = true;
+    } 
+    else if (tipo === "NOISE") {
+        noiseCounter = 0; // Reinicia o relógio do noise
+    } 
+    else {
+        // Sem transição definida, muda de imediato
+        gameState = novoEstado; 
     }
+}
 
-    // retangulo preto
-    fill(0, fadeAlpha);
-    rect(0, 0, width, height);
+function handleTransition() {
+    // 1. Transição: Fade a Preto
+    if (transitionType === "FADE" || isFading) {
+        if (isFading) {
+            fadeAlpha += 10; 
+            if (fadeAlpha >= 255) {
+                gameState = nextState;
+                isFading = false;
+            }
+        } else if (fadeAlpha > 0) {
+            fadeAlpha -= 10; 
+            if (fadeAlpha <= 0) {
+                transitionType = "NONE";
+            }
+        }
+        push();
+        noStroke();
+        fill(0, fadeAlpha);
+        rect(0, 0, width, height);
+        pop();
+    }
+    // 2. Transição: Estática de TV (Noise)
+    else if (transitionType === "NOISE") {
+        noiseCounter++;
+        
+        push();
+        noStroke();
+        let pixelSize = 5; // Tamanho do "grão" da TV. Aumentar se o PC ficar lento.
+        
+        for (let x = 0; x < width; x += pixelSize) {
+            for (let y = 0; y < height; y += pixelSize) {
+                // Sorteia um tom de cinza/preto/branco para cada quadrado
+                fill(random(255)); 
+                rect(x, y, pixelSize, pixelSize);
+            }
+        }
+        pop();
+
+        // Quando atingir a duração definida, faz a troca e desliga a transição
+        if (noiseCounter >= noiseDuration) {
+            gameState = nextState;
+            transitionType = "NONE"; 
+            noiseCounter = 0;
+        }
+    }
 }
 
 // ── Input ─────────────────────────────────────
 function mousePressed() {
-    if (isFading) return; // ignora cliques durante fade
+    // Ignora cliques enquanto houver uma transição a decorrer
+    if (transitionType !== "NONE" || isFading) return; 
 
     if (gameState.startsWith("TAREFA")) {
-        if (checkUniversalExit()) return; // Se clicou no botão sair, pára de ler o resto!
+        if (checkUniversalExit()) return; 
     }
+    
     if (gameState === "MENU") {
         if (
             mouseX > startBtn.x - startBtn.w / 2 && mouseX < startBtn.x + startBtn.w / 2 &&
             mouseY > startBtn.y - startBtn.h / 2 && mouseY < startBtn.y + startBtn.h / 2
         ) {
-            nextState = "QUARTO";
-            isFading = true;
+            let fs = fullscreen();
+            fullscreen(!fs);
+            
+            // --- ATUALIZADO: Agora usamos a função goTo para o Fade ---
+            goTo("QUARTO", "FADE"); 
         }
     }
     else if (gameState === "QUARTO") {
-        handleQuartoClick(); // definido em quarto.js
+        handleQuartoClick(); 
     } else if (gameState === "LIVRO") {
         handleLivroClick();
     } else if (gameState === "MENU_PERSONAGENS") {
         handlePersonagensClick();
     } else if (gameState === "NAVE") {
-        handleNaveClick(); // Chamamos a nova função da nave
+        handleNaveClick(); 
     } else if (gameState === "TAREFA1") {
         mousePressedTarefa1();
     } else if (gameState === "TAREFA2") {
@@ -315,12 +376,12 @@ function mousePressed() {
         mousePressedTarefa6();
     } else if (gameState === "TAREFA7") {
         mousePressedTarefa7();
-    } 
-    else if (gameState === "TAREFA8") {
+    } else if (gameState === "TAREFA8") {
         mousePressedTarefa8();
-    }else if (gameState === "VITORIA") { // <--- NOVO
+    } else if (gameState === "VITORIA") { 
         handleVitoriaClick();
-}}
+    }
+}
 
 function keyPressed() {
     if (gameState === "TAREFA3") {
@@ -335,7 +396,7 @@ function keyPressed() {
 }
 
 function mouseReleased() {
-   if (gameState === "TAREFA6") {
+    if (gameState === "TAREFA6") {
         mouseReleasedTarefa6();
     }
     else if (gameState === "TAREFA7") {
@@ -344,7 +405,7 @@ function mouseReleased() {
 }
 
 function mouseDragged() {
-   if (gameState === "TAREFA7") {
-        mouseDraggedTarefa7(); 
+    if (gameState === "TAREFA7") {
+        mouseDraggedTarefa7();
     }
 }

@@ -1,14 +1,14 @@
 let bgImg5; // Renomeado para não chocar com outras tarefas
 let rings = [];
-let currentRing = 0; 
+let currentRing = 0;
 let tarefa5State = 'PLAY'; // Substitui o gameState global
 const GOAL5 = 3;
 
 // Ajustadas ligeiramente para o nosso padrão 800x450 (eram para 900x500)
-let bX5 = 80; 
+let bX5 = 80;
 let bW5 = 186;
 let bH5 = 54;
-let bY_positions5 = [88, 198, 306]; 
+let bY_positions5 = [88, 198, 306];
 
 function preloadTarefa5() {
   bgImg5 = loadImage('imagens/tarefa5.png'); // Adicionado 'imagens/'
@@ -16,17 +16,19 @@ function preloadTarefa5() {
 
 function setupTarefa5() {
   // Sem createCanvas! Já usamos o sistema global WIDE_WIDTH e WIDE_HEIGHT do menu
-  
+
   // Coordenadas ajustadas proporcionalmente para caberem no ecrã de 800x450
-  rings.push(new SyncRing(377, 117, color(147, 32, 146))); 
-  rings.push(new SyncRing(377, 225, color(31, 64, 153)));  
-  rings.push(new SyncRing(377, 334, color(0, 169, 127)));  
+  rings.push(new SyncRing(377, 117, color(147, 32, 146)));
+  rings.push(new SyncRing(377, 225, color(31, 64, 153)));
+  rings.push(new SyncRing(377, 334, color(0, 169, 127)));
 }
 
 function drawTarefa5() {
-  // ── EFEITO POP-UP ──
-  image(bgNave, 0, 0, width, height); // Fundo da nave
-  
+  push();
+  imageMode(CENTER);
+  image(bgNave, width / 2, height / 2, naveNewW, naveNewH);
+  pop();
+
   noStroke();
   fill(0, 0, 0, 180);
   rect(0, 0, width, height); // Película escura
@@ -41,7 +43,7 @@ function drawTarefa5() {
 
   if (tarefa5State === 'PLAY') {
     displayHUD5();
-    drawDebugButtons5(); 
+    drawDebugButtons5();
 
     for (let i = 0; i < rings.length; i++) {
       rings[i].update();
@@ -51,27 +53,27 @@ function drawTarefa5() {
     // --- CONDIÇÃO DE VITÓRIA ---
     if (currentRing >= GOAL5) {
       tarefa5State = 'WIN';
-      
+
       // Avisa a nave que ganhámos a Tarefa 5 (Assume-se ser a tarefa "Some" do Octave)
-      TarefaConcluida.some = true; 
+      TarefaConcluida.some = true;
       setTimeout(() => {
-          goTo("NAVE");
-          resetGame5(); // Limpa as variáveis para se o user quiser repetir
+        goTo("NAVE");
+        resetGame5(); // Limpa as variáveis para se o user quiser repetir
       }, 1500);
     }
   } else if (tarefa5State === 'WIN') {
     showWinScreenUniform();
   }
-  
+
   pop(); // Fim da escala
 }
 
 function drawDebugButtons5() {
   for (let i = 0; i < bY_positions5.length; i++) {
     if (i === currentRing) {
-      fill(0, 255, 255, 100); 
+      fill(0, 255, 255, 100);
     } else {
-      fill(255, 0, 0, 50);    
+      fill(255, 0, 0, 50);
     }
     stroke(255);
     rect(bX5, bY_positions5[i], bW5, bH5);
@@ -114,8 +116,8 @@ function mousePressedTarefa5() {
     let virtualMouseY = (mouseY - widePopY) / (widePopH / WIDE_HEIGHT);
 
     if (virtualMouseX > bX5 && virtualMouseX < bX5 + bW5 &&
-        virtualMouseY > bY_positions5[currentRing] && virtualMouseY < bY_positions5[currentRing] + bH5) {
-      
+      virtualMouseY > bY_positions5[currentRing] && virtualMouseY < bY_positions5[currentRing] + bH5) {
+
       if (rings[currentRing].checkSync()) {
         rings[currentRing].isSynced = true;
         currentRing++;
@@ -144,9 +146,9 @@ class SyncRing {
     this.y = y;
     this.col = col;
     this.angle = random(TWO_PI);
-    this.speed = 0.04; 
+    this.speed = 0.04;
     this.isSynced = false;
-    this.radius = 70; 
+    this.radius = 70;
   }
 
   update() {
@@ -162,8 +164,8 @@ class SyncRing {
     fill(this.col);
     noStroke();
     rectMode(CENTER);
-    rect(this.radius, 0, 30, 30, 4); 
-    
+    rect(this.radius, 0, 30, 30, 4);
+
     if (this.isSynced) {
       drawingContext.shadowBlur = 20;
       drawingContext.shadowColor = this.col;
@@ -177,10 +179,10 @@ class SyncRing {
 
   checkSync() {
     let normalizedAngle = this.angle % TWO_PI;
-    let target = 0; 
-    let tolerance = 0.45; 
-    
-    return abs(normalizedAngle - target) < tolerance || 
-           abs(normalizedAngle - (TWO_PI)) < tolerance;
+    let target = 0;
+    let tolerance = 0.45;
+
+    return abs(normalizedAngle - target) < tolerance ||
+      abs(normalizedAngle - (TWO_PI)) < tolerance;
   }
 }

@@ -17,14 +17,17 @@ function preloadTarefa3() {
     bgImg3 = loadImage('imagens/tarefa3.png');
 }
 
-function setupTarefa3()  {
+function setupTarefa3() {
     player3 = new Player3();
 }
 
 function drawTarefa3() {
     // ── EFEITO POP-UP ──
-    image(bgNave, 0, 0, width, height); // Fundo da nave
-
+    push();
+    imageMode(CENTER);
+    image(bgNave, width / 2, height / 2, naveNewW, naveNewH);
+    pop();
+    
     noStroke();
     fill(0, 0, 0, 180);
     rect(0, 0, width, height); // Película escura
@@ -216,7 +219,7 @@ class Obstacle3 {
             fill(255, 50, 50);
             noStroke();
             if (this.type === 0) {
-                triangle(this.x, this.y + this.h, this.x + this.w/2, this.y, this.x + this.w, this.y + this.h);
+                triangle(this.x, this.y + this.h, this.x + this.w / 2, this.y, this.x + this.w, this.y + this.h);
             } else {
                 rect(this.x, this.y, this.w, this.h);
             }

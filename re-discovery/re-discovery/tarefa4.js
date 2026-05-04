@@ -1,7 +1,7 @@
 let bgImg4;
 let circles4 = [];
 let score4 = 0;
-let lives4 = 3; 
+let lives4 = 3;
 const GOAL4 = 10;
 let tarefa4State = 'PLAY';
 
@@ -15,8 +15,11 @@ function setupTarefa4() {
 
 function drawTarefa4() {
   // ── EFEITO POP-UP ──
-  image(bgNave, 0, 0, width, height); // Fundo da nave
-  
+  push();
+  imageMode(CENTER);
+  image(bgNave, width / 2, height / 2, naveNewW, naveNewH);
+  pop();
+
   noStroke();
   fill(0, 0, 0, 180);
   rect(0, 0, width, height); // Película escura
@@ -42,9 +45,9 @@ function drawTarefa4() {
 
       if (circles4[i].isExpired()) {
         if (circles4[i].isClicked) {
-          score4++; 
+          score4++;
         } else {
-          lives4--; 
+          lives4--;
           if (lives4 <= 0) tarefa4State = 'GAMEOVER';
         }
         circles4.splice(i, 1);
@@ -54,28 +57,37 @@ function drawTarefa4() {
     // --- CONDIÇÃO DE VITÓRIA ---
     if (score4 >= GOAL4 && tarefa4State === 'PLAY') {
       tarefa4State = 'WIN';
-      
+
       TarefaConcluida.super = true; // Avisa a nave que ganhámos a Tarefa 4 (Super)
       setTimeout(() => {
-          goTo("NAVE");
-          resetGame4(); // Limpa as variáveis para se o user quiser repetir
+        goTo("NAVE");
+        resetGame4(); // Limpa as variáveis para se o user quiser repetir
       }, 1500);
     }
-    
+
   } else if (tarefa4State === 'GAMEOVER') {
     showFailScreenUniform();
   } else if (tarefa4State === 'WIN') {
     showWinScreenUniform();
   }
-  
+
   pop(); // Fim da escala
 }
 
 function displayHUD4() {
+<<<<<<< HEAD
   textFont('Impact');
   fill(0, 255, 255);
   textSize(24);
   text(`SUPERPOWER CHARGED: ${score4} / ${GOAL4}`, 60, 60);
+=======
+  fill(0, 255, 255);
+  noStroke();
+  textAlign(LEFT);
+  textSize(24);
+  text(`Superpower Charged: ${score4} / ${GOAL4}`, 60, 60);
+
+>>>>>>> 84d8ad85803208393417849f759bc966fe16bb0d
   fill(255, 50, 50);
   text(`SHIELDS: ${"❤️".repeat(lives4)}`, 60, 90);
 }
@@ -123,8 +135,8 @@ function mousePressedTarefa4() {
 
     for (let i = circles4.length - 1; i >= 0; i--) {
       if (!circles4[i].isClicked && circles4[i].checkMouse(virtualMouseX, virtualMouseY)) {
-        circles4[i].isClicked = true; 
-        break; 
+        circles4[i].isClicked = true;
+        break;
       }
     }
   }
@@ -148,8 +160,8 @@ class ClickCircle4 {
     this.x = random(100, WIDE_WIDTH - 100);
     this.y = random(120, WIDE_HEIGHT - 100);
     this.innerR = 40;
-    this.outerR = 150; 
-    this.shrinkSpeed = 1.2; 
+    this.outerR = 150;
+    this.shrinkSpeed = 1.2;
     this.isClicked = false;
   }
 
@@ -159,17 +171,17 @@ class ClickCircle4 {
 
   show() {
     strokeWeight(4);
-    
+
     if (this.isClicked) {
-      fill(0, 255, 100); 
-      stroke(0, 255, 100); 
+      fill(0, 255, 100);
+      stroke(0, 255, 100);
     } else {
-      fill(0, 255, 255); 
-      stroke(0, 255, 255); 
+      fill(0, 255, 255);
+      stroke(0, 255, 255);
     }
     ellipse(this.x, this.y, this.innerR);
-    
-    noFill(); 
+
+    noFill();
     if (this.isClicked) {
       stroke(0, 255, 100, 150);
     } else {
