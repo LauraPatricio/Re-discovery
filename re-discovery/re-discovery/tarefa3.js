@@ -80,7 +80,7 @@ function drawTarefa3() {
             }
         }
     } else if (tarefa3State === 'GAMEOVER') {
-        showGameOver3();
+        showFailScreenUniform();
     } else if (tarefa3State === 'WIN') {
         showWinScreenUniform();
     }
@@ -89,19 +89,24 @@ function drawTarefa3() {
 }
 
 function displayScore3() {
-    fill(255);
+    textFont('Impact');
+    fill(0, 255, 255);
     textAlign(LEFT);
     textSize(24);
-    text(`Memories Recovered: ${score3} / ${GOAL3}`, 60, 60);
+    text(`MEMORIES RECOVERED: ${score3} / ${GOAL3}`, 60, 60);
 }
 
-function showGameOver3() {
-    fill(0, 0, 0, 200);
-    rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
-    fill(255);
+function showFailScreenUniform() {
+    push();
     textAlign(CENTER, CENTER);
-    textSize(40);
-    text("RETRY? Press Space", WIDE_WIDTH / 2, WIDE_HEIGHT / 2);
+    textFont('Impact');
+    drawingContext.shadowBlur = 15;
+    drawingContext.shadowColor = color(255, 0, 0);
+    
+    fill(255, 0, 0);
+    textSize(popW * 0.08);
+    text("FAILED - TRY AGAIN", WIDE_WIDTH / 2, WIDE_HEIGHT / 2);
+    pop();
 }
 
 function showWinScreenUniform() {

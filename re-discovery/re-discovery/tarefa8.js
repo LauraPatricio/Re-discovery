@@ -146,18 +146,25 @@ function showFinalWin() {
   fill(0, 0, 0, 220);
   rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
   
+  push();
   textAlign(CENTER, CENTER);
+  textFont('Impact'); // Fonte uniforme
+  
+  // Efeito Neon Verde consistente com as outras tarefas[cite: 1, 8]
   drawingContext.shadowBlur = 25;
   drawingContext.shadowColor = color(0, 255, 100);
   
   fill(0, 255, 100);
-  textSize(50);
-  text("IDENTITY RECOVERED", WIDE_WIDTH/2, WIDE_HEIGHT/2 - 20);
+  // Tamanho proporcional ao pop-up (usando a lógica da Tarefa 1: widePopW * 0.08)[cite: 1]
+  textSize(WIDE_WIDTH * 0.08); 
+  text("IDENTITY RECOVERED", WIDE_WIDTH / 2, WIDE_HEIGHT / 2 - 20);
   
+  // Reset do brilho para o subtítulo
   drawingContext.shadowBlur = 0;
   fill(255);
-  textSize(22);
-  text("One More Time... Discovery complete.", WIDE_WIDTH/2, WIDE_HEIGHT/2 + 50);
+  textSize(WIDE_WIDTH * 0.03); 
+  text("ONE MORE TIME... DISCOVERY COMPLETE.", WIDE_WIDTH / 2, WIDE_HEIGHT / 2 + 60);
+  pop();
 }
 
 function resetTarefa8() {

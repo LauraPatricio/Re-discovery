@@ -63,7 +63,7 @@ function drawTarefa4() {
     }
     
   } else if (tarefa4State === 'GAMEOVER') {
-    showGameOver4();
+    showFailScreenUniform();
   } else if (tarefa4State === 'WIN') {
     showWinScreenUniform();
   }
@@ -72,26 +72,25 @@ function drawTarefa4() {
 }
 
 function displayHUD4() {
-  fill(0, 255, 255); 
-  noStroke();
-  textAlign(LEFT);
+  textFont('Impact');
+  fill(0, 255, 255);
   textSize(24);
-  text(`Superpower Charged: ${score4} / ${GOAL4}`, 60, 60);
-  
+  text(`SUPERPOWER CHARGED: ${score4} / ${GOAL4}`, 60, 60);
   fill(255, 50, 50);
-  text(`Shields: ${"❤️".repeat(lives4)}`, 60, 90);
+  text(`SHIELDS: ${"❤️".repeat(lives4)}`, 60, 90);
 }
 
-function showGameOver4() {
-  fill(0, 0, 0, 200);
-  rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
-  fill(255, 50, 50);
-  textAlign(CENTER, CENTER);
-  textSize(40);
-  text("SYSTEM FAILURE", WIDE_WIDTH / 2, WIDE_HEIGHT / 2);
-  textSize(20);
-  fill(255);
-  text("Press Space to Reboot", WIDE_WIDTH / 2, WIDE_HEIGHT / 2 + 50);
+function showFailScreenUniform() {
+    push();
+    textAlign(CENTER, CENTER);
+    textFont('Impact');
+    drawingContext.shadowBlur = 15;
+    drawingContext.shadowColor = color(255, 0, 0);
+    
+    fill(255, 0, 0);
+    textSize(popW * 0.08);
+    text("FAILED - TRY AGAIN", WIDE_WIDTH / 2, WIDE_HEIGHT / 2);
+    pop();
 }
 
 function showWinScreenUniform() {

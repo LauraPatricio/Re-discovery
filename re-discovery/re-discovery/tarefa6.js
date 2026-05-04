@@ -45,10 +45,10 @@ function drawTarefa6() {
     updateGame6();
   } 
   else if (tarefa6State === "FAIL") {
-    // Integration: Using the uniform failure style concept
+    // This calls the overlay with the uniform failure style parameters
     drawOverlay6("FAILED", "STRAYED FROM PATH - TRY AGAIN");
     drawRocket6(pathPoints6[0].x, pathPoints6[0].y);
-  } 
+}
   else if (tarefa6State === "WIN") {
     // Integration: Calling the new uniform win screen function
     showWinScreenUniform();
@@ -59,26 +59,33 @@ function drawTarefa6() {
 
 // Updated Overlay to match uniform typography and neon style
 function drawOverlay6(title, subtitle) {
-  fill(0, 0, 0, 180);
-  rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
-  
-  push();
-  textAlign(CENTER, CENTER);
-  textFont('Impact'); // Uniform font
-  
-  // Title with Neon Glow
-  drawingContext.shadowBlur = 15;
-  drawingContext.shadowColor = (title === "FAILED") ? color(255, 0, 0) : color(0, 255, 255);
-  fill((title === "FAILED") ? color(255, 0, 0) : color(0, 255, 255)); 
-  textSize(45);
-  text(title, WIDE_WIDTH / 2, WIDE_HEIGHT / 2 - 30);
-  
-  // Subtitle
-  drawingContext.shadowBlur = 0;
-  fill(255);
-  textSize(20);
-  text(subtitle, WIDE_WIDTH / 2, WIDE_HEIGHT / 2 + 30);
-  pop();
+    fill(0, 0, 0, 180);
+    rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
+    
+    push();
+    textAlign(CENTER, CENTER);
+    textFont('Impact'); // Uniform font
+    
+    // Check if it's a failure to apply Red Neon, otherwise use Cyan
+    if (title === "FAILED") {
+        drawingContext.shadowBlur = 15;
+        drawingContext.shadowColor = color(255, 0, 0); // Red shadow
+        fill(255, 0, 0); // Red text
+    } else {
+        drawingContext.shadowBlur = 15;
+        drawingContext.shadowColor = color(0, 255, 255); // Cyan shadow
+        fill(0, 255, 255); // Cyan text
+    }
+    
+    textSize(WIDE_WIDTH * 0.08); // Scale text size to pop-up width[cite: 1]
+    text(title, WIDE_WIDTH / 2, WIDE_HEIGHT / 2 - 30);
+    
+    // Subtitle (Uniform white text)
+    drawingContext.shadowBlur = 0;
+    fill(255);
+    textSize(WIDE_WIDTH * 0.03);
+    text(subtitle, WIDE_WIDTH / 2, WIDE_HEIGHT / 2 + 60);
+    pop();
 }
 
 // NEW: Uniform Win Screen Function added here for clarity
