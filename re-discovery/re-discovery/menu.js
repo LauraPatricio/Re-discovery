@@ -144,7 +144,10 @@ function resetCurrentTask() {
         discoveryVisible = false;
         flashError = false;
     }
-    else if (gameState === "TAREFA8") { resetTarefa8(); }
+    else if (gameState === "TAREFA8") { 
+    stopTarefa8Audio(); // Para todos os loops imediatamente[cite: 20]
+    resetTarefa8(); 
+}
 }
 
 function calcularPopUpWide() {

@@ -1,8 +1,10 @@
-let bgImg5; // Renomeado para não chocar com outras tarefas
+let bgImg5; 
 let rings = [];
+let tracks = []; // Array para as faixas de música
 let currentRing = 0;
-let tarefa5State = 'PLAY'; // Substitui o gameState global
+let tarefa5State = 'PLAY';
 const GOAL5 = 3;
+let winDelayTimer = 0; // Timer para o atraso de 5 segundos
 
 // Ajustadas ligeiramente para o nosso padrão 800x450 (eram para 900x500)
 let bX5 = 80;
@@ -11,16 +13,23 @@ let bH5 = 54;
 let bY_positions5 = [88, 198, 306];
 
 function preloadTarefa5() {
-  bgImg5 = loadImage('imagens/tarefa5.png'); // Adicionado 'imagens/'
+  bgImg5 = loadImage('imagens/tarefa5.png');
+  // Carrega as 3 faixas sincronizadas
+  tracks[0] = loadSound('sons/bass.mp3'); 
+  tracks[1] = loadSound('sons/drums.mp3');
+  tracks[2] = loadSound('sons/melody.mp3');
 }
 
 function setupTarefa5() {
-  // Sem createCanvas! Já usamos o sistema global WIDE_WIDTH e WIDE_HEIGHT do menu
-
-  // Coordenadas ajustadas proporcionalmente para caberem no ecrã de 800x450
   rings.push(new SyncRing(377, 117, color(147, 32, 146)));
   rings.push(new SyncRing(377, 225, color(31, 64, 153)));
   rings.push(new SyncRing(377, 334, color(0, 169, 127)));
+
+  // Inicia todas as faixas juntas em loop, mas com volume 0
+  for (let t of tracks) {
+    t.setVolume(0);
+    t.loop();
+  }
 }
 
 function drawTarefa5() {
@@ -48,24 +57,30 @@ function drawTarefa5() {
     for (let i = 0; i < rings.length; i++) {
       rings[i].update();
       rings[i].show();
+      
+      // Se o anel estiver sincronizado, aumenta o volume daquela faixa
+      if (rings[i].isSynced) {
+        tracks[i].setVolume(1.0);
+      }
     }
 
-    // --- CONDIÇÃO DE VITÓRIA ---
     if (currentRing >= GOAL5) {
-      tarefa5State = 'WIN';
-
-      // Avisa a nave que ganhámos a Tarefa 5 (Assume-se ser a tarefa "Some" do Octave)
-      TarefaConcluida.some = true;
-      setTimeout(() => {
-        goTo("NAVE");
-        resetGame5(); // Limpa as variáveis para se o user quiser repetir
-      }, 1500);
+      // Inicia a contagem de 5 segundos com a música completa
+      winDelayTimer++;
+      if (winDelayTimer > 300) { // 300 frames aprox. 5 segundos a 60fps
+        tarefa5State = 'WIN';
+        TarefaConcluida.some = true;
+        setTimeout(() => {
+          stopAllTracks();
+          goTo("NAVE");
+          resetGame5();
+        }, 1500);
+      }
     }
   } else if (tarefa5State === 'WIN') {
     showWinScreenUniform();
   }
-
-  pop(); // Fim da escala
+  pop();
 }
 
 function drawDebugButtons5() {
@@ -131,11 +146,24 @@ function keyPressedTarefa5() {
   // Esta função pode ficar vazia, ou servir para atalhos de debug.
 }
 
+function stopAllTracks() {
+  for (let t of tracks) {
+    if (t.isPlaying()) t.stop();
+  }
+}
+
 function resetGame5() {
   currentRing = 0;
+  winDelayTimer = 0;
+  stopAllTracks();
   for (let ring of rings) {
     ring.isSynced = false;
     ring.angle = random(TWO_PI);
+  }
+  // Reinicia a sincronia de áudio para um novo jogo
+  for (let t of tracks) {
+    t.setVolume(0);
+    t.loop();
   }
   tarefa5State = 'PLAY';
 }

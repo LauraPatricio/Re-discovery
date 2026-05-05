@@ -1,4 +1,7 @@
 let bgImg8, vinylCenterImg;
+let somDrums, somOneMore; // Faixas sincronizadas
+let somStatic;           // Ruído do vinil
+let winDelayTimer8 = 0;   // Timer de 5 segundos
 let tarefa8phase = 1; 
 let sliderY = 270; // (Era 300) Ajustado para a proporção 800x450
 let sliderSpeed = 4;
@@ -21,12 +24,25 @@ let lastMouseAngle = 0;
 let isSpinning = false;
 
 function preloadTarefa8() {
-  // Ajustado o prefixo para carregar da pasta correta
   bgImg8 = loadImage('imagens/tarefa8.png');
-  vinylCenterImg = loadImage('imagens/Daft_Punk_Discovery.png'); 
+  vinylCenterImg = loadImage('imagens/Daft_Punk_Discovery.png');
+  
+  // Carregamento dos sons conforme as referências
+  somDrums = loadSound('sons/drumsOMT.mp3');
+  somOneMore = loadSound('sons/one more time.mp3');
+  somStatic = loadSound('sons/vinyl static.mp3');
 }
 
 function setupTarefa8() {
+  // Inicia a estática, mas começa muda até o utilizador arrastar
+  somStatic.loop();
+  somStatic.setVolume(0);
+
+  // Inicia bateria e melodia juntas (em mute) para garantir sincronia total[cite: 17]
+  somDrums.setVolume(0);
+  somOneMore.setVolume(0);
+  somDrums.loop();
+  somOneMore.loop();
 }
 
 function drawTarefa8() {
@@ -50,13 +66,40 @@ function drawTarefa8() {
 
   drawVinylLabel();
 
-  // Corrigido de "phase" para usar a tua variável global "tarefa8phase"
   if (tarefa8phase === 1) {
     handleSliderPhase();
-  } else if (tarefa8phase === 2) {
+  } 
+  else if (tarefa8phase === 2) {
     handleVinylPhase();
-  } else if (tarefa8phase === 3) {
-    showFinalWin();
+    
+    // ATIVAÇÃO DA BATERIA: Volume sobe para 1.0 assim que entra na Fase 2
+    if (somDrums.isLoaded()) somDrums.setVolume(1.0);
+
+    // --- CONTROLO DINÂMICO DE ÁUDIO ---
+    if (isSpinning) {
+      let progressFactor = totalRotation / (TWO_PI * targetRotations);
+      
+      // A estática diminui conforme o progresso (de 0.5 para 0)[cite: 20]
+      somStatic.setVolume(map(progressFactor, 0, 1, 0.5, 0));
+      
+      // A melodia ("One More Time") aumenta conforme o progresso[cite: 20]
+      somOneMore.setVolume(map(progressFactor, 0, 1, 0, 1.0));
+    } else {
+      // Se não estiver a girar, a estática e a melodia ficam em silêncio[cite: 20]
+      somStatic.setVolume(0);
+      somOneMore.setVolume(0);
+    }
+  } 
+  else if (tarefa8phase === 3) {
+    // Vitória: Para a estática e mantém a música completa por 5 segundos[cite: 17]
+    somStatic.setVolume(0);
+    somDrums.setVolume(1.0);
+    somOneMore.setVolume(1.0);
+
+    winDelayTimer8++;
+    if (winDelayTimer8 > 300) { // ~5 segundos a 60fps
+       showFinalWin();
+    }
   }
   
   pop(); // Fim da escala
@@ -176,4 +219,21 @@ function resetTarefa8() {
     rotationAngle = 0;
     totalRotation = 0;
     isSpinning = false;
+    winDelayTimer8 = 0;
+    
+    // Para todos os sons para reiniciar a sincronia
+    if (somDrums.isPlaying()) somDrums.stop();
+    if (somOneMore.isPlaying()) somOneMore.stop();
+    if (somStatic.isPlaying()) somStatic.stop();
+    
+    // Reinicia o setup de áudio
+    setupTarefa8();
+}
+
+// Chamar isto no resetCurrentTask() do menu.js se gameState === "TAREFA8"[cite: 19]
+function stopTarefa8Audio() {
+    if (somDrums) somDrums.stop();
+    if (somOneMore) somOneMore.stop();
+    if (somStatic) somStatic.stop();
+    isSpinning = false; // Garante que o estado de rotação é resetado[cite: 18]
 }
