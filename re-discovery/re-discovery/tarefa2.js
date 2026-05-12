@@ -243,4 +243,4 @@ function generateRandomSequence(len) {
 // Para redimensionar a janela 
 function windowResizedTarefa2() {
     initializeButtonsTarefa2();
-}
+}}
