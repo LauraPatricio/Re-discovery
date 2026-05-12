@@ -11,7 +11,7 @@ let interactiveButtons = [];
 let visualSquares = [];
 let gameStatus = "";
 
-// ── VARIÁVEIS DO POP-UP ──
+// variaveis pop-up
 let popX, popY, popW, popH;
 
 function preloadTarefa1() {
@@ -30,7 +30,7 @@ function initializeGrids() {
     interactiveButtons = [];
     visualSquares = [];
 
-    // 1. Calcular o tamanho do Pop-up (80% do ecrã, mantendo proporção)
+    // Manter proporção)
     popW = width * 0.65;
     popH = popW * (600 / 1100);
 
@@ -39,11 +39,11 @@ function initializeGrids() {
         popW = popH * (1100 / 600);
     }
 
-    // 2. Calcular o centro para o Pop-up
+    // Calcular o centro para o Pop-up
     popX = width / 2 - popW / 2;
     popY = height / 2 - popH / 2;
 
-    // 3. Coordenadas relativas ao tamanho e posição do Pop-up
+    /?Coordenadas relativas ao tamanho e posição do Pop-up
     let rightX = popX + popW * 0.575;
     let rightY = popY + popH * 0.175;
     let gapX = popW * 0.126;
@@ -74,22 +74,19 @@ function initializeGrids() {
 }
 
 function drawTarefa1() {
-    // ── EFEITO POP-UP (Fundo e Moldura) ──
-    // 1. Desenha a nave no fundo
+    //Desenha a nave no fundo
     push();
     imageMode(CENTER);
     image(bgNave, width/2, height/2, naveNewW, naveNewH);
     pop();
 
-    // 2. Película escura
     noStroke();
     fill(0, 0, 0, 180);
     rect(0, 0, width, height);
 
-    // 3. Desenha a imagem da tarefa centrada (O Pop-up)
     push();
     imageMode(CORNER);
-    image(bgImg, popX, popY, popW, popH); // Imagem da tarefa
+    image(bgImg, popX, popY, popW, popH); 
     pop();
 
     // ── LÓGICA DE ESTADOS (MUDANÇA AQUI) ──
@@ -105,11 +102,12 @@ function drawTarefa1() {
         pop();
     }
     else {
-        // --- TUDO O QUE ESTÁ AQUI DENTRO SÓ ACONTECE DEPOIS DO START ---
+        
 
         // Lógica da sequência
         if (isShowing) {
             if (millis() - lastStepTime > 600) {
+
                 // Desativa todos os brilhos antes de mostrar o próximo
                 for (let i = 0; i < 9; i++) visualSquares[i].active = false;
 
@@ -179,16 +177,15 @@ function drawStartScreen() {
 }
 
 function mousePressedTarefa1() {
-    // 1. Verificamos se estamos no ecrã de instruções
+    // Verificar se estar no ecrã de instruções
     if (tarefa1State === "INSTRUCTIONS") {
         if (checkStartClick()) {
             tarefa1State = "PLAY"; 
-            startNewRound(); // Arranca a primeira sequência de luzes/sons!
+            startNewRound(); // Arranca a primeira sequência de luzes/sons
         }
-        return; // O 'return' impede que o código continue e clique nos botões sem querer
+        return; 
     }
 
-    // 2. A tua lógica antiga dos quadrados (só funciona depois do START)
     if (isShowing || gameStatus === "PASS") return;
 
     for (let i = 0; i < 9; i++) {
@@ -224,9 +221,9 @@ function handlePlayerInput(idx) {
 function startNewRound() {
     sequence = [];
     
-    // Gera uma sequência de 5 passos, escolhendo aleatoriamente entre os 9 botões (0 a 8)
+    // Gera uma sequência 
     for (let i = 0; i < 5; i++) {
-        let randomButton = floor(random(9)); // Escolhe um número inteiro de 0 a 8
+        let randomButton = floor(random(9)); 
         sequence.push(randomButton);
     }
     
@@ -237,7 +234,7 @@ function startNewRound() {
     gameStatus = "";
 }
 
-// Atualizado para o menu.js chamar quando redimensionar a janela
+//chamar quando redimensionar a janela
 function windowResizedTarefa1() {
     initializeGrids();
 }
