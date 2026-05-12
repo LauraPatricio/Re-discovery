@@ -16,7 +16,6 @@ const GOAL3 = 10;
 
 function preloadTarefa3() {
     bgImg3 = loadImage('imagens/tarefa3.png');
-    // Certifique-se de que o caminho e nome do arquivo de áudio estejam corretos
     som3 = loadSound('sons/crescendolls.mp3');
 }
 
@@ -72,7 +71,7 @@ function drawTarefa3() {
             obs.move();
             obs.show();
 
-            // 1. Verificar Colisão (Utilizando o método hits do PLAYER para maior estabilidade)
+
             if (player3.hits(obs)) {
                 resetGame3(true); 
                 return; 
