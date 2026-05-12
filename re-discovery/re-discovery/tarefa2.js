@@ -1,7 +1,8 @@
-let bgImg2; // Renomeado para não chocar com o bg da Tarefa 1
+//para imagens
+let bgImg2; 
 let buttonImages = {};
 let words = ["WORK IT", "MAKE IT", "DO IT", "MAKES US", "HARDER", "BETTER", "FASTER", "STRONGER"];
-let buttons2 = []; // Renomeado para evitar conflitos
+let buttons2 = [];
 
 let correctSequence = [];
 let playerSequence2 = [];
@@ -10,23 +11,21 @@ let sequenceIndex = 0;
 let displayWord = "";
 let loseTimer = 0;
 
-// ── VARIÁVEIS DO POP-UP DA TAREFA 2 ──
+//variaves pop-up tarefa2
 let t2_popX, t2_popY, t2_popW, t2_popH;
 
-// No topo do ficheiro tarefa2.js
 let wordSounds = {}; 
 
 function preloadTarefa2() {
     bgImg2 = loadImage('imagens/tarefa2.png');
     for (let word of words) {
         buttonImages[word] = loadImage('imagens/' + word + '.png');
-        // Carrega o som correspondente a cada palavra (ex: imagens/BETTER.mp3)
         wordSounds[word] = loadSound('sons/' + word + '.mp3'); 
     }
 }
 
+//gerar a sequencia e preparar os btns 
 function setupTarefa2() {
-    // Sem createCanvas! Apenas geramos a sequência e preparamos os botões
     generateRandomSequence(4);
     initializeButtonsTarefa2();
 }
@@ -34,7 +33,7 @@ function setupTarefa2() {
 function initializeButtonsTarefa2() {
     buttons2 = [];
 
-    // 1. Calcular o tamanho do Pop-up (proporção original era 800x500)
+    //Calcular o tamanho do pop-up 
     t2_popW = width * 0.65;
     t2_popH = t2_popW * (500 / 800);
 
@@ -43,11 +42,10 @@ function initializeButtonsTarefa2() {
         t2_popW = t2_popH * (800 / 500);
     }
 
-    // 2. Calcular o centro
+    //Calcular o centro
     t2_popX = width / 2 - t2_popW / 2;
     t2_popY = height / 2 - t2_popH / 2;
 
-    // 3. Coordenadas relativas à proporção original (800x500)
     let startX = t2_popX + t2_popW * (130 / 800);
     let startY = t2_popY + t2_popH * (320 / 500);
     let colGap = t2_popW * (115 / 800);
@@ -70,7 +68,6 @@ function initializeButtonsTarefa2() {
 }
 
 function drawTarefa2() {
-    // ── EFEITO POP-UP ──
     push();
     imageMode(CENTER);
     image(bgNave, width/2, height/2, naveNewW, naveNewH);
@@ -78,19 +75,19 @@ function drawTarefa2() {
 
     noStroke();
     fill(0, 0, 0, 180);
-    rect(0, 0, width, height); // Película escura
+    rect(0, 0, width, height);
 
     push();
     imageMode(CORNER);
-    image(bgImg2, t2_popX, t2_popY, t2_popW, t2_popH); // Imagem da tarefa
+    image(bgImg2, t2_popX, t2_popY, t2_popW, t2_popH); 
     pop();
 
-    // ── LÓGICA DE ESTADOS (INSTRUÇÕES VS JOGO) ──
+    // logica estados/ instruções e jogo
     if (tarefa2State === "INSTRUCTIONS") {
-        // Mostra o ecrã de instruções uniformizado
+
+    
         push();
         translate(t2_popX, t2_popY);
-        // Garante que a proporção bate certo com o tamanho do pop-up
         scale(t2_popW / WIDE_WIDTH, t2_popH / WIDE_HEIGHT); 
         drawTaskInstructions(
             "Harder Better Faster Stronger", 
@@ -99,8 +96,7 @@ function drawTarefa2() {
         pop();
     } 
     else {
-        // --- TUDO O QUE ESTÁ AQUI SÓ ACONTECE DEPOIS DE CLICAR NO START ---
-        
+       
         if (tarefa2State === 'MEMORIZE') {
             handleMemorizePhase();
         } else if (tarefa2State === 'PLAY') {
@@ -111,7 +107,7 @@ function drawTarefa2() {
             handleLoseState();
         }
 
-        drawButtonsTarefa2(); // Só desenha os botões se o jogo já tiver começado!
+        drawButtonsTarefa2(); // Só desenha os botões se o jogo já tiver começado
     }
 }
 
@@ -120,6 +116,7 @@ function handleMemorizePhase() {
 
     if (frameCycle === 0 && sequenceIndex < correctSequence.length) {
         displayWord = correctSequence[sequenceIndex];
+
         // Toca o som da palavra exibida
         if (wordSounds[displayWord]) wordSounds[displayWord].play(); 
         sequenceIndex++;
@@ -158,11 +155,11 @@ function drawButtonsTarefa2() {
 function drawNeonPhrase(sequence, col) {
     textAlign(CENTER, CENTER);
 
-    // Tamanho do texto ajustado ao pop-up
+    // tamanho do texto ajustado ao pop-up
     textSize(t2_popW * (30 / 800));
     let phrase = sequence.join(" ");
 
-    // Posição Y do texto relativa ao pop-up (original era 135)
+    // Posição y do texto relativa ao pop-up
     let textY = t2_popY + t2_popH * (135 / 500);
 
     push();
@@ -179,16 +176,14 @@ function drawNeonPhrase(sequence, col) {
 }
 
 function mousePressedTarefa2() {
-    // 1. Verificar o botão Start no menu de instruções
+    // Verificar o botão start no menu de instruções
     if (tarefa2State === "INSTRUCTIONS") {
         if (checkStartClick()) {
             tarefa2State = "MEMORIZE"; // Muda de estado para começar a piscar as palavras
         }
-        return; // Pára aqui
-    }
+        return;
 
-    // 2. A tua lógica normal do jogo (só os cliques nas palavras)
-    // Só deixamos clicar se o estado for PLAY (depois de memorizar)
+    //logica jogo
     if (tarefa2State !== 'PLAY') return;
 
     for (let b of buttons2) {
@@ -215,20 +210,19 @@ function checkInput(clickedWord) {
         if (isCorrect) {
             tarefa2State = 'WIN';
 
-            // --- VITÓRIA E DESBLOQUEIO ---
+            //vitoria
             TarefaConcluida.harder = true;
 
             setTimeout(() => {
-                // 1. Reset automático para a próxima vez que jogar
+                //Reset automático para a próxima vez que jogar
                 generateRandomSequence(4);
                 playerSequence2 = [];
                 sequenceIndex = 0;
                 displayWord = "";
                 
-                // 2. Usar o reset da tua colega para as instruções
                 tarefa2State = "INSTRUCTIONS";
                 
-                // 3. Chamar a tua função de memória em vez de ir para a Nave
+                // chama a memoria
                 concluirComMemoria("harder"); 
             }, 1500);
 
@@ -246,7 +240,7 @@ function generateRandomSequence(len) {
     }
 }
 
-// Para redimensionar a janela adequadamente
+// Para redimensionar a janela 
 function windowResizedTarefa2() {
     initializeButtonsTarefa2();
 }
