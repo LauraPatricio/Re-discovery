@@ -151,7 +151,18 @@ function handleLoseState() {
 
 function drawButtonsTarefa2() {
     for (let b of buttons2) {
+        // 1. Desenha a imagem do botão normalmente
         image(buttonImages[b.word], b.x, b.y, b.w, b.h);
+
+        // 2. LÓGICA DA SOMBRA (BLOQUEIO VISUAL)
+        // Se o estado for diferente de PLAY, desenha uma película escura sobre o botão
+        if (tarefa2State !== 'PLAY') {
+            push();
+            noStroke();
+            fill(0, 0, 0, 160); // Retângulo preto com opacidade a 160
+            rect(b.x, b.y, b.w, b.h, 5); // O número '5' arredonda ligeiramente os cantos
+            pop();
+        }
     }
 }
 
