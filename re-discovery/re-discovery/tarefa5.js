@@ -84,15 +84,57 @@ function drawTarefa5() {
 }
 
 function drawDebugButtons5() {
-  for (let i = 0; i < bY_positions5.length; i++) {
-    if (i === currentRing) {
-      fill(0, 255, 255, 100);
-    } else {
-      fill(255, 0, 0, 50);
+    // Calculamos o rato virtual aqui para verificar o hover
+    let virtualMouseX = (mouseX - widePopX) / (widePopW / WIDE_WIDTH);
+    let virtualMouseY = (mouseY - widePopY) / (widePopH / WIDE_HEIGHT);
+
+    for (let i = 0; i < bY_positions5.length; i++) {
+        let isPressed = mouseIsPressed && virtualMouseX > bX5 && virtualMouseX < bX5 + bW5 && virtualMouseY > bY_positions5[i] && virtualMouseY < bY_positions5[i] + bH5;
+
+        // Os botões base (ciano, vermelho e linhas brancas) foram totalmente removidos para ficarem invisíveis.
+        
+        // ── O botão SÓ aparece (película cinzenta) quando pressionado ──
+        if (isPressed && tarefa5State === 'PLAY') {
+            push();
+            noStroke();
+            fill(150, 150, 150, 150); // Tom acinzentado semi-transparente
+            rect(bX5, bY_positions5[i], bW5, bH5, 5); // Adicionei o '5' para arredondar os cantos igual à Tarefa 2
+            pop();
+        }
     }
-    stroke(255);
-    rect(bX5, bY_positions5[i], bW5, bH5);
-  }
+}
+
+function mousePressedTarefa5() {
+    if (tarefa5State === "INSTRUCTIONS") {
+        if (checkStartClick()) {
+            tarefa5State = "PLAY";
+            for (let t of tracks) {
+                if (!t.isPlaying()) {
+                    t.setVolume(0);
+                    t.loop();
+                }
+            }
+        }
+        return;
+    }
+
+    if (tarefa5State === 'PLAY') {
+        let virtualMouseX = (mouseX - widePopX) / (widePopW / WIDE_WIDTH);
+        let virtualMouseY = (mouseY - widePopY) / (widePopH / WIDE_HEIGHT);
+
+        if (currentRing < GOAL5) {
+            if (virtualMouseX > bX5 && virtualMouseX < bX5 + bW5 &&
+                virtualMouseY > bY_positions5[currentRing] && virtualMouseY < bY_positions5[currentRing] + bH5) {
+                
+                if (typeof somClick !== 'undefined' && somClick.isLoaded()) somClick.play(); // ── NOVO SOM ──
+                
+                if (rings[currentRing].checkSync()) {
+                    rings[currentRing].isSynced = true;
+                    currentRing++;
+                }
+            }
+        }
+    }
 }
 
 function displayHUD5() {
@@ -124,37 +166,6 @@ function showWinScreenUniform() {
     pop();
 }
 
-function mousePressedTarefa5() {
-  if (tarefa5State === "INSTRUCTIONS") {
-    if (checkStartClick()) {
-      tarefa5State = "PLAY";
-      //inicia a musica a 0 pra fcrem sincronizadas
-      for (let t of tracks) {
-        if (!t.isPlaying()) {
-            t.setVolume(0);
-            t.loop();
-        }
-      }
-    }
-    return;
-  }
-
-  if (tarefa5State === 'PLAY') {
-    let virtualMouseX = (mouseX - widePopX) / (widePopW / WIDE_WIDTH);
-    let virtualMouseY = (mouseY - widePopY) / (widePopH / WIDE_HEIGHT);
-
-    if (currentRing < GOAL5) {
-      if (virtualMouseX > bX5 && virtualMouseX < bX5 + bW5 &&
-          virtualMouseY > bY_positions5[currentRing] && virtualMouseY < bY_positions5[currentRing] + bH5) {
-
-        if (rings[currentRing].checkSync()) {
-          rings[currentRing].isSynced = true;
-          currentRing++;
-        }
-      }
-    }
-  }
-}
 
 function keyPressedTarefa5() {
   // Esta função fica vazia ou servir para atalhos de debug

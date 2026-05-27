@@ -142,11 +142,16 @@ function drawVisualFeedbacks() {
     }
 
     for (let i = 0; i < 9; i++) {
-        if (interactiveButtons[i].active) {
+        let b = interactiveButtons[i];
+        
+        // Deteta se o rato está por cima E a ser pressionado
+        let isPressed = mouseIsPressed && mouseX > b.x && mouseX < b.x + b.size && mouseY > b.y && mouseY < b.y + b.size;
+
+        if (b.active) {
             noStroke();
-            fill(0, 255, 255, 120);
-            rect(interactiveButtons[i].x, interactiveButtons[i].y, interactiveButtons[i].size, interactiveButtons[i].size);
-        }
+            fill(150, 150, 150, 150); // Tom acinzentado semi-transparente
+            rect(b.x, b.y, b.size, b.size);
+        } 
     }
 }
 
@@ -179,25 +184,25 @@ function drawStartScreen() {
 }
 
 function mousePressedTarefa1() {
-    // 1. Verificamos se estamos no ecrã de instruções
     if (tarefa1State === "INSTRUCTIONS") {
         if (checkStartClick()) {
             tarefa1State = "PLAY"; 
-            startNewRound(); // Arranca a primeira sequência de luzes/sons!
+            startNewRound();
         }
-        return; // O 'return' impede que o código continue e clique nos botões sem querer
+        return; 
     }
 
-    // 2. A tua lógica antiga dos quadrados (só funciona depois do START)
     if (isShowing || gameStatus === "PASS") return;
 
     for (let i = 0; i < 9; i++) {
         let b = interactiveButtons[i];
         if (mouseX > b.x && mouseX < b.x + b.size && mouseY > b.y && mouseY < b.y + b.size) {
+            if (typeof somClick !== 'undefined' && somClick.isLoaded()) somClick.play(); // ── NOVO SOM ──
             handlePlayerInput(i);
         }
     }
 }
+
 function handlePlayerInput(idx) {
     interactiveButtons[idx].active = true;
     notes[idx].play();

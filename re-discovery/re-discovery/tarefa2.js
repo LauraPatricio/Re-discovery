@@ -151,17 +151,45 @@ function handleLoseState() {
 
 function drawButtonsTarefa2() {
     for (let b of buttons2) {
-        // 1. Desenha a imagem do botão normalmente
         image(buttonImages[b.word], b.x, b.y, b.w, b.h);
 
-        // 2. LÓGICA DA SOMBRA (BLOQUEIO VISUAL)
-        // Se o estado for diferente de PLAY, desenha uma película escura sobre o botão
+        // Deteta se o rato está por cima E a ser pressionado
+        let isPressed = mouseIsPressed && mouseX > b.x && mouseX < b.x + b.w && mouseY > b.y && mouseY < b.y + b.h;
+
         if (tarefa2State !== 'PLAY') {
             push();
             noStroke();
-            fill(0, 0, 0, 160); // Retângulo preto com opacidade a 160
-            rect(b.x, b.y, b.w, b.h, 5); // O número '5' arredonda ligeiramente os cantos
+            fill(0, 0, 0, 160); 
+            rect(b.x, b.y, b.w, b.h, 5); 
             pop();
+        } 
+        // ── NOVO: Película cinzenta quando pressionado ──
+        else if (isPressed) {
+            push();
+            noStroke();
+            fill(150, 150, 150, 150); 
+            rect(b.x, b.y, b.w, b.h, 5); 
+            pop();
+        }
+    }
+}
+
+function mousePressedTarefa2() {
+    if (tarefa2State === "INSTRUCTIONS") {
+        if (checkStartClick()) {
+            tarefa2State = "MEMORIZE"; 
+        }
+        return; 
+    }
+
+    if (tarefa2State !== 'PLAY') return;
+
+    for (let b of buttons2) {
+        if (mouseX > b.x && mouseX < b.x + b.w && mouseY > b.y && mouseY < b.y + b.h) {
+            if (typeof somClick !== 'undefined' && somClick.isLoaded()) somClick.play(); // ── NOVO SOM ──
+            if (wordSounds[b.word]) wordSounds[b.word].play(); 
+            checkInput(b.word);
+            break;
         }
     }
 }
@@ -189,27 +217,6 @@ function drawNeonPhrase(sequence, col) {
     pop();
 }
 
-function mousePressedTarefa2() {
-    // 1. Verificar o botão Start no menu de instruções
-    if (tarefa2State === "INSTRUCTIONS") {
-        if (checkStartClick()) {
-            tarefa2State = "MEMORIZE"; // Muda de estado para começar a piscar as palavras
-        }
-        return; // Pára aqui
-    }
-
-    // 2. A tua lógica normal do jogo (só os cliques nas palavras)
-    // Só deixamos clicar se o estado for PLAY (depois de memorizar)
-    if (tarefa2State !== 'PLAY') return;
-
-    for (let b of buttons2) {
-        if (mouseX > b.x && mouseX < b.x + b.w && mouseY > b.y && mouseY < b.y + b.h) {
-            if (wordSounds[b.word]) wordSounds[b.word].play(); 
-            checkInput(b.word);
-            break;
-        }
-    }
-}
 
 function checkInput(clickedWord) {
     playerSequence2.push(clickedWord);
