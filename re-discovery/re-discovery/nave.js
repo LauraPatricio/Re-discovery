@@ -50,6 +50,9 @@ function drawNave() {
     imageMode(CORNER);
     image(bgNave, 0, 0);
 
+    // ── NOVO: Chama a vida da nave (Estrelas, Estática e Luzes) ──
+    drawCockpitLife();
+
     // logica vidro
     let nivelVidroAtual = 0;
 
@@ -84,9 +87,84 @@ function drawNave() {
     verificarProgressoNave();
 }
 
+// ── EFEITOS DE AMBIENTE E FEEDBACK ──
+function drawCockpitLife() {
+    push();
+
+    // 1. ESTRELAS NA JANELA (Mantém a vida na galáxia)
+    for(let i = 0; i < 30; i++) {
+        let sx = noise(i, 0) * 1400 + 250; 
+        let sy = noise(0, i) * 600 + 50;   
+        let alpha = noise(i, frameCount * 0.03) * 255;
+        fill(255, 255, 255, alpha);
+        noStroke();
+        ellipse(sx, sy, random(1, 3));
+    }
+
+    // 2. ESTÁTICA NOS MONITORES (Preenche totalmente o ecrã e desaparece ao concluir)
+    // Coordenadas e tamanhos ajustados para baterem certo com os limites dos teus monitores
+    drawStaticScreen(698, 805, 128, 102, TarefaConcluida.voyager); // Monitor Esquerdo
+    drawStaticScreen(945, 830, 118, 90, TarefaConcluida.harder);   // Monitor Central
+
+    // 3. LUZES NOS BOTÕES CINZENTOS
+    // Agora piscam SEMPRE, e só se apagam quando a tarefa é concluída!
+    drawGreyButtonLight(1090, 906, TarefaConcluida.crescendolls);
+    drawGreyButtonLight(1180, 909, TarefaConcluida.aerodynamic);
+    drawGreyButtonLight(1180, 767, TarefaConcluida.super);
+    drawGreyButtonLight(1292, 837, TarefaConcluida.veridis);
+    drawGreyButtonLight(1184, 839, TarefaConcluida.some);
+    drawGreyButtonLight(522, 850, TarefaConcluida.one);
+
+    pop();
+}
+
+function drawStaticScreen(cx, cy, w, h, isFinished) {
+    if (!isFinished) {
+        push();
+        noStroke();
+        
+        // --- MÁSCARA PERFEITA ---
+        // Garante que a estática não sai dos limites do ecrã com cantos arredondados
+        drawingContext.save();
+        drawingContext.beginPath();
+        // Desenha a máscara com 15px de arredondamento nos cantos
+        drawingContext.roundRect(cx - w/2, cy - h/2, w, h, 15); 
+        drawingContext.clip(); 
+
+        // Fundo do ecrã mais escuro
+        fill(20, 20, 20, 240);
+        rect(cx - w/2, cy - h/2, w, h); 
+        
+        // Estática densa a preencher toda a área
+        for (let i = 0; i < 150; i++) {
+            fill(255, 255, 255, random(50, 180));
+            // Os quadrados agora podem ser desenhados à vontade, a máscara corta o excesso!
+            rect(cx - w/2 + random(w), cy - h/2 + random(h), random(3, 8), random(3, 8));
+        }
+
+        // Restaura o contexto para não cortar o resto do jogo
+        drawingContext.restore();
+        pop();
+    }
+}
+
+// Nota: Removi o parâmetro isUnlocked. A luz agora depende apenas do isFinished.
+function drawGreyButtonLight(cx, cy, isFinished) {
+    if (!isFinished) {
+        push();
+        let pulseAlpha = sin(frameCount * 0.1) * 100 + 155;
+        drawingContext.shadowBlur = 12;
+        drawingContext.shadowColor = color(0, 255, 255, pulseAlpha); // Brilho Ciano
+        fill(0, 255, 255, pulseAlpha * 0.8);
+        noStroke();
+        // Desenha a luz no centro do botão cinzento
+        ellipse(cx, cy, 10, 10); 
+        pop();
+    }
+}
+
 
 function drawBtnImagem(x, y, isUnlocked, isConcluded, imgLine, imgHover, imgConc) {
-
     let fatorAjuste = 1.22;
     let w = imgLine.width * fatorAjuste;
     let h = imgLine.height * fatorAjuste;
@@ -104,18 +182,20 @@ function drawBtnImagem(x, y, isUnlocked, isConcluded, imgLine, imgHover, imgConc
     imageMode(CENTER);
 
     if (isConcluded) {
+        // Tarefa concluída: Mantém o preenchimento verde (já existente)
         image(imgConc, x, y, w, h);
     }
     else if (isUnlocked) {
         if (over) {
+            // Mouse por cima: Desenha o outline (SVGs azuis)
             cursor(HAND);
             image(imgHover, x, y, w, h);
-        } else {
-            image(imgLine, x, y, w, h);
         }
+        // Se o rato não estiver por cima, não desenha nada (fica invisível)!
     }
     pop();
 }
+
 // Configura quais botões aparecem dependendo do personagem
 function configurarBotoesNave() {
     for (let key in btnNave) { btnNave[key] = false; }
