@@ -52,6 +52,7 @@ function drawNave() {
 
     // ── NOVO: Chama a vida da nave (Estrelas, Estática e Luzes) ──
     drawCockpitLife();
+    mostrarCoordenadasRato();
 
     // logica vidro
     let nivelVidroAtual = 0;
@@ -91,7 +92,7 @@ function drawNave() {
 function drawCockpitLife() {
     push();
 
-    // 1. ESTRELAS NA JANELA (Mantém a vida na galáxia)
+    // 1. ESTRELAS NA JANELA
     for(let i = 0; i < 30; i++) {
         let sx = noise(i, 0) * 1400 + 250; 
         let sy = noise(0, i) * 600 + 50;   
@@ -101,67 +102,75 @@ function drawCockpitLife() {
         ellipse(sx, sy, random(1, 3));
     }
 
-    // 2. ESTÁTICA NOS MONITORES (Preenche totalmente o ecrã e desaparece ao concluir)
-    // Coordenadas e tamanhos ajustados para baterem certo com os limites dos teus monitores
-    drawStaticScreen(698, 805, 128, 102, TarefaConcluida.voyager); // Monitor Esquerdo
-    drawStaticScreen(945, 830, 118, 90, TarefaConcluida.harder);   // Monitor Central
+    // 2. MONITORES DE ESTÁTICA (Preenchem a 100% e somem ao concluir)
+    // Coordenadas centrais ajustadas para o ecrã esquerdo e central
+    drawStaticScreen(698, 805, 130, 100, TarefaConcluida.voyager); 
+    drawStaticScreen(935, 830, 115, 85, TarefaConcluida.harder);  
 
-    // 3. LUZES NOS BOTÕES CINZENTOS
-    // Agora piscam SEMPRE, e só se apagam quando a tarefa é concluída!
-    drawGreyButtonLight(1090, 906, TarefaConcluida.crescendolls);
-    drawGreyButtonLight(1180, 909, TarefaConcluida.aerodynamic);
-    drawGreyButtonLight(1180, 767, TarefaConcluida.super);
-    drawGreyButtonLight(1292, 837, TarefaConcluida.veridis);
-    drawGreyButtonLight(1184, 839, TarefaConcluida.some);
-    drawGreyButtonLight(522, 850, TarefaConcluida.one);
 
+    // 4. LUZES AMBIENTE (Botões Coloridos Físicos - Piscam sempre)
+    drawColoredLight(180, 770, "circle", color(150, 0, 255));  // Roxo (Esquerda)
+    drawColoredLight(260, 830, "circle", color(255, 255, 0));  // Amarelo (Esquerda)
+    drawColoredLight(1090, 900, "circle", color(0, 255, 0));   // Verde (Centro-direita)
+    drawColoredLight(1180, 760, "circle", color(255, 0, 0));   // Vermelho (Direita)
+    drawColoredLight(1180, 840, "circle", color(0, 100, 255)); // Azul (Direita)
+
+    
     pop();
 }
 
+// --- ESTÁTICA PREENCHIDA A 100% ---
 function drawStaticScreen(cx, cy, w, h, isFinished) {
     if (!isFinished) {
         push();
         noStroke();
+        rectMode(CENTER);
         
-        // --- MÁSCARA PERFEITA ---
-        // Garante que a estática não sai dos limites do ecrã com cantos arredondados
+        // Máscara com cantos arredondados (o Canvas API usa x, y do canto superior esquerdo para desenhar)
         drawingContext.save();
         drawingContext.beginPath();
-        // Desenha a máscara com 15px de arredondamento nos cantos
         drawingContext.roundRect(cx - w/2, cy - h/2, w, h, 15); 
         drawingContext.clip(); 
 
-        // Fundo do ecrã mais escuro
+        // Fundo do ecrã escuro
         fill(20, 20, 20, 240);
-        rect(cx - w/2, cy - h/2, w, h); 
+        rect(cx, cy, w, h); 
         
-        // Estática densa a preencher toda a área
-        for (let i = 0; i < 150; i++) {
-            fill(255, 255, 255, random(50, 180));
-            // Os quadrados agora podem ser desenhados à vontade, a máscara corta o excesso!
-            rect(cx - w/2 + random(w), cy - h/2 + random(h), random(3, 8), random(3, 8));
+        // Estática densa
+        for (let i = 0; i < 200; i++) {
+            fill(255, 255, 255, random(50, 200));
+            // Gera os quadrados de estática à volta do centro do ecrã
+            rect(cx + random(-w/2, w/2), cy + random(-h/2, h/2), random(3, 7), random(3, 7));
         }
 
-        // Restaura o contexto para não cortar o resto do jogo
         drawingContext.restore();
         pop();
     }
 }
 
-// Nota: Removi o parâmetro isUnlocked. A luz agora depende apenas do isFinished.
-function drawGreyButtonLight(cx, cy, isFinished) {
-    if (!isFinished) {
-        push();
-        let pulseAlpha = sin(frameCount * 0.1) * 100 + 155;
-        drawingContext.shadowBlur = 12;
-        drawingContext.shadowColor = color(0, 255, 255, pulseAlpha); // Brilho Ciano
-        fill(0, 255, 255, pulseAlpha * 0.8);
-        noStroke();
-        // Desenha a luz no centro do botão cinzento
-        ellipse(cx, cy, 10, 10); 
-        pop();
+
+// --- LUZES DOS BOTÕES COLORIDOS ---
+function drawColoredLight(cx, cy, shapeType, c) {
+    push();
+    rectMode(CENTER);
+    
+    // ── NOVO: Adicionado '+ cx * 0.05' para desincronizar o piscar ──
+    let pulseAlpha = sin(frameCount * 0.1 + cx * 0.05) * 100 + 100;
+    
+    drawingContext.shadowBlur = 20;
+    drawingContext.shadowColor = color(red(c), green(c), blue(c), pulseAlpha); 
+    fill(red(c), green(c), blue(c), pulseAlpha * 0.8);
+    noStroke();
+    
+    if (shapeType === "circle") {
+        ellipse(cx, cy, 32, 32);
+    } else {
+        rect(cx, cy, 30, 30, 5);
     }
+    pop();
 }
+
+
 
 
 function drawBtnImagem(x, y, isUnlocked, isConcluded, imgLine, imgHover, imgConc) {
@@ -277,4 +286,21 @@ function handleNaveClick() {
     if (btnNave.btnVeridis && !TarefaConcluida.veridis && clickBtn(1292, 837, buttonLine["Veridis"])) goTo("TAREFA7");
     if (btnNave.btnSome && !TarefaConcluida.some && clickBtn(1184, 839, buttonLine["Some"])) goTo("TAREFA5");
     if (btnNave.btnOne && !TarefaConcluida.one && clickBtn(522, 850, buttonLine["One"])) goTo("TAREFA8");
+}
+
+function mostrarCoordenadasRato() {
+    let larguraEscalada = bgNave.width * scaleRatioNave;
+    let centroX = (width - larguraEscalada) / 2;
+    let vX = (mouseX - centroX) / scaleRatioNave;
+    let vY = mouseY / scaleRatioNave;
+
+    push();
+    fill(255, 0, 0); 
+    noStroke();
+    textSize(20);
+    textFont('Arial');
+    textAlign(LEFT, TOP);
+    // Desenha nas coordenadas virtuais para acompanhar o cursor na perfeição!
+    text("X: " + floor(vX) + " | Y: " + floor(vY), vX + 15, vY + 15);
+    pop();
 }
