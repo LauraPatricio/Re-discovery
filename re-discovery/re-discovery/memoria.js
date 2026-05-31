@@ -43,7 +43,7 @@ function concluirComMemoria(tarefaKey) {
     memoriaVideo.hide();
     memoriaVideo.elt.playsInline = true;
     
-    let tarefasMusicais = ['crescendolls', 'super', 'some', 'one'];
+    let tarefasMusicais = ['crescendolls', 'super', 'some', 'one', 'voyager'];
     if (!tarefasMusicais.includes(tarefaKey) && sonsExtraMemoria[tarefaKey]) {
         sonsExtraMemoria[tarefaKey].play();
     }

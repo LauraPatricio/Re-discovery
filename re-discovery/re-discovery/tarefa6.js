@@ -5,9 +5,13 @@ let tarefa6State = "INSTRUCTIONS";
 let pathPoints6 = [];
 const tolerance6 = 25; 
 
+//som
+let som6;
+
 function preloadTarefa6() {
   bgImg6 = loadImage('imagens/tarefa6.png');
   rocketImg6 = loadImage('imagens/rocket.png');
+  som6= som6 = loadSound('sons/voyager.mp3');
 }
 
 function setupTarefa6() {
@@ -50,7 +54,15 @@ function drawTarefa6() {
     );
   } 
   else {
-    // --- LÓGICA ORIGINAL DO JOGO ---
+    
+    if (tarefa6State !== "WIN") {
+        if (som6 && som6.isLoaded() && !som6.isPlaying()) {
+            som6.setVolume(0.6);
+            som6.loop();
+        }
+      } 
+    
+    //logica jogo
     if (tarefa6State === "START") {
       drawOverlay6("VOYAGER", "HOLD MOUSE TO GUIDE ROCKET");
       drawRocket6(pathPoints6[0].x, pathPoints6[0].y);
@@ -193,4 +205,8 @@ function mouseReleasedTarefa6() {
 function resetGame6() {
   tarefa6State = "INSTRUCTIONS";
   isDragging6 = false;
+
+  // if (som6 && som6.isPlaying()) {
+  //     som6.stop();
+  //   }
 }

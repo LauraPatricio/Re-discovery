@@ -596,6 +596,7 @@ function pararTodosSonsTarefas() {
 
     if (typeof som3 !== 'undefined' && som3 && som3.isPlaying()) som3.stop();
     if (typeof som4 !== 'undefined' && som4 && som4.isPlaying()) som4.stop();
+    if (typeof som6 !== 'undefined' && som6 && som6.isPlaying()) som6.stop();
     if (typeof stopAllTracks === 'function') stopAllTracks();
     if (typeof stopTarefa8Audio === 'function') stopTarefa8Audio();
 }

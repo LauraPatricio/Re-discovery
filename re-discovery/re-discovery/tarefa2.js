@@ -182,6 +182,7 @@ function mousePressedTarefa2() {
             tarefa2State = "MEMORIZE"; // Muda de estado para começar a piscar as palavras
         }
         return;
+    }
 
     //logica jogo
     if (tarefa2State !== 'PLAY') return;
@@ -243,4 +244,4 @@ function generateRandomSequence(len) {
 // Para redimensionar a janela 
 function windowResizedTarefa2() {
     initializeButtonsTarefa2();
-}}
+}

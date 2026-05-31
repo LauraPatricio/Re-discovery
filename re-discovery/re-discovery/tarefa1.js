@@ -43,7 +43,7 @@ function initializeGrids() {
     popX = width / 2 - popW / 2;
     popY = height / 2 - popH / 2;
 
-    /?Coordenadas relativas ao tamanho e posição do Pop-up
+    //Coordenadas relativas ao tamanho e posição do Pop-up
     let rightX = popX + popW * 0.575;
     let rightY = popY + popH * 0.175;
     let gapX = popW * 0.126;
