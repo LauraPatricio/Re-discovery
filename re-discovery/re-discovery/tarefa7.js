@@ -25,6 +25,7 @@ function setupTarefa7() {
 }
 
 function drawTarefa7() {
+  image(bgMenu, 0, 0, menuNewW, menuNewH);
   push();
   imageMode(CENTER);
   image(bgNave, width / 2, height / 2, naveNewW, naveNewH);

@@ -47,6 +47,8 @@ function drawVitoriaScreen() {
     let centroX = (width - larguraEscalada) / 2;
 
     // ── CAMADA 1: NAVE ────────────────────────
+    image(bgMenu, 0, 0, menuNewW, menuNewH);
+    
     push();
     translate(centroX, 0);
     scale(scaleRatioNave);

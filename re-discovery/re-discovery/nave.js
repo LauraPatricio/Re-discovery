@@ -41,12 +41,15 @@ let nivelVidroAnterior = 0; // Variável para monitorizar mudanças
 
 function drawNave() {
     background(0);
+    
+    image(bgMenu, 0, 0, menuNewW, menuNewH);
+
     let larguraEscalada = bgNave.width * scaleRatioNave;
     let centroX = (width - larguraEscalada) / 2;
     push(); 
     translate(centroX, 0); 
     scale(scaleRatioNave);
-    
+
     imageMode(CORNER);
     image(bgNave, 0, 0);
 

@@ -32,6 +32,7 @@ function drawTarefa6() {
   // ── EFEITO POP-UP ──
   push();
   imageMode(CENTER);
+  image(bgMenu, 0, 0, menuNewW, menuNewH);
   image(bgNave, width / 2, height / 2, naveNewW, naveNewH);
   pop();
   
