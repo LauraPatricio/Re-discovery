@@ -24,7 +24,6 @@ const WIDE_HEIGHT = 450;
 let somGlass; 
 
 function preload() {
-    bgMenu = loadImage('imagens/fundo.png');
     exitImg = loadImage('imagens/Exit.png');
     logo = loadImage('imagens/logo.png');
     somAmbienteNave = loadSound('sons/spaceship.mp3');
@@ -54,6 +53,10 @@ function tocarSomRacha() {
 }
 
 function setup() {
+
+    bgMenu = createVideo(['videos/fundo.mp4'], videoLoaded);
+    bgMenu.hide(); 
+
     createCanvas(windowWidth, windowHeight);
     calcularTamanhosFundo(); 
     calcularPopUpWide();
@@ -68,18 +71,33 @@ function setup() {
     setupTarefa8();
 }
 
+function videoLoaded() {
+    bgMenu.elt.muted = true; 
+    bgMenu.loop();          
+    calcularTamanhosFundo();
+}
+
 function calcularTamanhosFundo() {
-    scaleRatioMenu = max(width / bgMenu.width, height / bgMenu.height);
+    // Prevenção: Se o vídeo ainda não carregou, usamos 1920x1080 temporariamente
+    let bgMenuW = bgMenu.width || 1920; 
+    let bgMenuH = bgMenu.height || 1080;
+
+    scaleRatioMenu = max(width / bgMenuW, height / bgMenuH);
     scaleRatioQuarto = max(width / bgQuartoImg.width, height / bgQuartoImg.height);
     scaleRatioNave = max(width / bgNave.width, height / bgNave.height);
 
     naveNewW = bgNave.width * scaleRatioNave;
     naveNewH = bgNave.height * scaleRatioNave;
-    menuNewW = bgMenu.width * scaleRatioMenu;
-    menuNewH = bgMenu.height * scaleRatioMenu;
+    
+    // Atualizado para usar as variáveis protegidas
+    menuNewW = bgMenuW * scaleRatioMenu;
+    menuNewH = bgMenuH * scaleRatioMenu;
+    
     quartoNewW = bgQuartoImg.width * scaleRatioQuarto;
     quartoNewH = bgQuartoImg.height * scaleRatioQuarto;
 }
+
+
 
 function drawUniversalExit() {
     let px, py, pw;
