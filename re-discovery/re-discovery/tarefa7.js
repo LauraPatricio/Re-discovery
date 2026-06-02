@@ -148,9 +148,11 @@ function drawResultArea() {
 
 // Uniformized Win Screen for Tarefa 7[cite: 1]
 function showWinScreenUniform7() {
+    noStroke();
     fill(0, 0, 0, 200);
     rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
     
+
     push();
     textAlign(CENTER, CENTER);
     textFont('Impact');

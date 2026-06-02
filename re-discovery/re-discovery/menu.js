@@ -54,7 +54,7 @@ function tocarSomRacha() {
 
 function setup() {
 
-    bgMenu = createVideo(['videos/fundo.mp4'], videoLoaded);
+    bgMenu = createVideo(['videos/fundo.webm'], videoLoaded);
     bgMenu.hide(); 
 
     createCanvas(windowWidth, windowHeight);

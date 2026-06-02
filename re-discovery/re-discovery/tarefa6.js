@@ -5,13 +5,13 @@ let tarefa6State = "INSTRUCTIONS";
 let pathPoints6 = [];
 const tolerance6 = 25; 
 
-//som
+// som
 let som6;
 
 function preloadTarefa6() {
   bgImg6 = loadImage('imagens/tarefa6.png');
   rocketImg6 = loadImage('imagens/rocket.png');
-  som6= som6 = loadSound('sons/voyager.mp3');
+  som6 = loadSound('sons/voyager.mp3'); // (Aproveitei para corrigir um pequeno erro de digitação aqui)
 }
 
 function setupTarefa6() {
@@ -31,8 +31,8 @@ function setupTarefa6() {
 function drawTarefa6() {
   // ── EFEITO POP-UP ──
   push();
-  imageMode(CENTER);
   image(bgMenu, 0, 0, menuNewW, menuNewH);
+  imageMode(CENTER);
   image(bgNave, width / 2, height / 2, naveNewW, naveNewH);
   pop();
   
@@ -55,15 +55,9 @@ function drawTarefa6() {
     );
   } 
   else {
+    // NOTA: O som automático foi removido daqui para termos controlo total.
     
-    if (tarefa6State !== "WIN") {
-        if (som6 && som6.isLoaded() && !som6.isPlaying()) {
-            som6.setVolume(0.6);
-            som6.loop();
-        }
-      } 
-    
-    //logica jogo
+    // logica jogo
     if (tarefa6State === "START") {
       drawOverlay6("VOYAGER", "HOLD MOUSE TO GUIDE ROCKET");
       drawRocket6(pathPoints6[0].x, pathPoints6[0].y);
@@ -83,30 +77,27 @@ function drawTarefa6() {
   pop(); 
 }
 
-// Updated Overlay to match uniform typography and neon style
 function drawOverlay6(title, subtitle) {
     fill(0, 0, 0, 180);
     rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
     
     push();
     textAlign(CENTER, CENTER);
-    textFont('Impact'); // Uniform font
+    textFont('Impact'); 
     
-    // Check if it's a failure to apply Red Neon, otherwise use Cyan
     if (title === "FAILED") {
         drawingContext.shadowBlur = 15;
-        drawingContext.shadowColor = color(255, 0, 0); // Red shadow
-        fill(255, 0, 0); // Red text
+        drawingContext.shadowColor = color(255, 0, 0); 
+        fill(255, 0, 0); 
     } else {
         drawingContext.shadowBlur = 15;
-        drawingContext.shadowColor = color(0, 255, 255); // Cyan shadow
-        fill(0, 255, 255); // Cyan text
+        drawingContext.shadowColor = color(0, 255, 255); 
+        fill(0, 255, 255); 
     }
     
-    textSize(WIDE_WIDTH * 0.08); // Scale text size to pop-up width[cite: 1]
+    textSize(WIDE_WIDTH * 0.08); 
     text(title, WIDE_WIDTH / 2, WIDE_HEIGHT / 2 - 30);
     
-    // Subtitle (Uniform white text)
     drawingContext.shadowBlur = 0;
     fill(255);
     textSize(WIDE_WIDTH * 0.03);
@@ -114,7 +105,6 @@ function drawOverlay6(title, subtitle) {
     pop();
 }
 
-// NEW: Uniform Win Screen Function added here for clarity
 function showWinScreenUniform() {
     fill(0, 0, 0, 200);
     rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
@@ -123,7 +113,7 @@ function showWinScreenUniform() {
     textAlign(CENTER, CENTER);
     textFont('Impact');
     drawingContext.shadowBlur = 15;
-    drawingContext.shadowColor = color(0, 255, 100); // Green Neon[cite: 1, 2]
+    drawingContext.shadowColor = color(0, 255, 100); 
     
     fill(0, 255, 100);
     textSize(WIDE_WIDTH * 0.08); 
@@ -147,21 +137,24 @@ function updateGame6() {
       if (d < minD) minD = d;
     }
 
+   
     if (minD > tolerance6) {
       tarefa6State = "FAIL";
       isDragging6 = false; 
+      // Para a música imediatamente
+      if (som6 && som6.isPlaying()) som6.stop(); 
     }
 
+    
     let endPoint = pathPoints6[pathPoints6.length - 1];
     if (dist(virtualMouseX, virtualMouseY, endPoint.x, endPoint.y) < 25) {
       tarefa6State = "WIN";
       isDragging6 = false;
       TarefaConcluida.voyager = true; 
       
-      // --- A MUDANÇA ESTÁ AQUI ---
       setTimeout(() => {
-          resetGame6(); // Limpa a tarefa para a próxima vez
-          concluirComMemoria("voyager"); // Chama o vídeo da memória correspondente!
+          resetGame6(false); 
+          concluirComMemoria("voyager"); 
       }, 1500);
     }
     
@@ -175,23 +168,26 @@ function drawRocket6(x, y) {
 }
 
 function mousePressedTarefa6() {
-  // 1. Verificar clique no botão de instruções
   if (tarefa6State === "INSTRUCTIONS") {
     if (checkStartClick()) {
       tarefa6State = "START"; 
     }
-    return; // Impede interações com o foguetão antes de começar
+    return; 
   }
 
-  // 2. Lógica original de clique/arrasto (apenas se o jogo já começou)
   let virtualMouseX = (mouseX - widePopX) / (widePopW / WIDE_WIDTH);
   let virtualMouseY = (mouseY - widePopY) / (widePopH / WIDE_HEIGHT);
 
   if (tarefa6State === "START" || tarefa6State === "FAIL") {
-    // Verifica se clicou perto do ponto inicial para começar a arrastar
     if (dist(virtualMouseX, virtualMouseY, pathPoints6[0].x, pathPoints6[0].y) < 30) {
       tarefa6State = "PLAYING";
       isDragging6 = true;
+
+     
+      if (som6 && som6.isLoaded() && !som6.isPlaying()) {
+          som6.setVolume(0.3);
+          som6.loop();
+      }
     }
   }
 }
@@ -200,14 +196,19 @@ function mouseReleasedTarefa6() {
   if (tarefa6State === "PLAYING") {
     tarefa6State = "FAIL";
     isDragging6 = false;
+    
+    
+    if (som6 && som6.isPlaying()) som6.stop();
   }
 }
 
-function resetGame6() {
+
+function resetGame6(pararSom = true) { 
   tarefa6State = "INSTRUCTIONS";
   isDragging6 = false;
 
-  // if (som6 && som6.isPlaying()) {
-  //     som6.stop();
-  //   }
+  
+  if (pararSom && som6 && som6.isPlaying()) {
+      som6.stop();
+  }
 }

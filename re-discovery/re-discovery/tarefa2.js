@@ -69,8 +69,8 @@ function initializeButtonsTarefa2() {
 
 function drawTarefa2() {
     push();
-    imageMode(CENTER);
     image(bgMenu, 0, 0, menuNewW, menuNewH);
+    imageMode(CENTER);
     image(bgNave, width/2, height/2, naveNewW, naveNewH);
     pop();
 

@@ -76,8 +76,8 @@ function initializeGrids() {
 function drawTarefa1() {
     //Desenha a nave no fundo
     push();
-    imageMode(CENTER);
     image(bgMenu, 0, 0, menuNewW, menuNewH);
+    imageMode(CENTER);
     image(bgNave, width/2, height/2, naveNewW, naveNewH);
     pop();
 
@@ -152,19 +152,56 @@ function drawVisualFeedbacks() {
 function drawResultMessage() {
     if (gameStatus !== "") {
         push();
-        textAlign(CENTER, CENTER);
-        textFont('Impact');
-        textSize(popW * 0.08); // Tamanho de texto relativo ao pop-up
+        translate(popX, popY);
+        scale(popW / WIDE_WIDTH, popH / WIDE_HEIGHT); 
 
         if (gameStatus === "FAIL") {
-            fill(255, 0, 0);
-            text("FAILED - TRY AGAIN", width / 2, height / 2);
+            showFailScreenUniform();
         } else if (gameStatus === "PASS") {
-            fill(0, 255, 0);
-            text("IDENTITY RECOVERED", width / 2, height / 2);
+            showWinScreenUniform();
         }
         pop();
     }
+}
+
+function showWinScreenUniform() {
+    fill(0, 0, 0, 200);
+    rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
+    
+    push();
+    textAlign(CENTER, CENTER);
+    textFont('Impact');
+    
+   
+    drawingContext.shadowBlur = 15;
+    drawingContext.shadowColor = color(0, 255, 100);
+    fill(0, 255, 100);
+    textSize(WIDE_WIDTH * 0.08); 
+    text("IDENTITY RECOVERED", WIDE_WIDTH / 2, WIDE_HEIGHT / 2);
+    
+    
+    drawingContext.shadowBlur = 0; 
+    textSize(WIDE_WIDTH * 0.03); 
+    fill(255);
+    text("MEMORY SYNCED...", WIDE_WIDTH / 2, WIDE_HEIGHT / 2 + 60);
+    pop();
+}
+
+function showFailScreenUniform() {
+    fill(0, 0, 0, 200);
+    rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
+    
+    push();
+    textAlign(CENTER, CENTER);
+    textFont('Impact');
+    
+    // Título em Vermelho Néon
+    drawingContext.shadowBlur = 15;
+    drawingContext.shadowColor = color(255, 0, 0);
+    fill(255, 0, 0);
+    textSize(WIDE_WIDTH * 0.08);
+    text("FAILED - TRY AGAIN", WIDE_WIDTH / 2, WIDE_HEIGHT / 2);
+    pop();
 }
 
 function drawStartScreen() {

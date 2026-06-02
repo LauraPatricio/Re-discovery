@@ -13,7 +13,6 @@ let groundLevel3 = 342;
 let gameSpeed3 = 5;
 let score3 = 0;
 const GOAL3 = 10;
-
 function preloadTarefa3() {
     bgImg3 = loadImage('imagens/tarefa3.png');
     som3 = loadSound('sons/crescendolls.mp3');
@@ -27,8 +26,8 @@ function setupTarefa3() {
 function drawTarefa3() {
    
     push();
+     image(bgMenu, 0, 0, menuNewW, menuNewH);
     imageMode(CENTER);
-    image(bgMenu, 0, 0, menuNewW, menuNewH);
     image(bgNave, width / 2, height / 2, naveNewW, naveNewH);
     pop();
 
@@ -192,10 +191,12 @@ class Player3 {
     }
 
     show() {
+        push();
         fill(0, 255, 255);
         stroke(255);
         strokeWeight(2);
         rect(this.x, this.y, this.size, this.size);
+        pop();
     }
 
     hits(obs) {

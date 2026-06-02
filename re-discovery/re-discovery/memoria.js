@@ -69,55 +69,41 @@ function concluirComMemoria(tarefaKey) {
 }
 
 function drawMemoriaScreen() {
+    // 1. Fundo da Nave
     push();
     imageMode(CENTER);
     image(bgNave, width / 2, height / 2, naveNewW, naveNewH);
     pop();
 
+    // 2. Película escura
     noStroke();
     fill(0, 0, 0, 180);
     rect(0, 0, width, height);
 
-    push();
-    translate(widePopX, widePopY);
-    scale(widePopW / WIDE_WIDTH, widePopH / WIDE_HEIGHT);
+    // --- CÁLCULO LIVRE PARA O VÍDEO (MAIOR E EM 4:3) ---
+    // O vídeo vai ocupar 85% da altura da tua janela
+    let videoH = height * 0.75; 
+    let videoW = videoH * (4 / 3); // Garante a proporção matemática 4:3
 
-    if (memoriaVideo && memoriaVideo.elt.readyState >= 2) {
-        imageMode(CORNER);
-        image(memoriaVideo, 0, 0, WIDE_WIDTH, WIDE_HEIGHT);
-        
-        // Efeito Vignette 
-        let grad = drawingContext.createRadialGradient(WIDE_WIDTH/2, WIDE_HEIGHT/2, WIDE_HEIGHT * 0.2, WIDE_WIDTH/2, WIDE_HEIGHT/2, WIDE_WIDTH * 0.7);
-        grad.addColorStop(0, 'rgba(0,0,0,0)');
-        grad.addColorStop(1, 'rgba(0,0,0,0.95)');
-        
-        drawingContext.fillStyle = grad;
-        noStroke();
-        noFill();
-        rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
+    // Prevenção: Se o ecrã for muito estreito, ajustamos pela largura em vez da altura
+    if (videoW > width * 0.9) {
+        videoW = width * 0.9;
+        videoH = videoW * (3 / 4);
     }
-    pop();
-}
-// NAO É USADA
-function _drawContinueButton(vW, vH) {
-    // Escurece o último frame do vídeo ligeiramente
-    noStroke();
-   noFill();
-    rect(0, 0, vW, vH);
 
-    push();
-    textAlign(CENTER, CENTER);
-    textFont('Impact');
+    // Calcula as coordenadas exatas para centrar perfeitamente no ecrã
+    let videoX = (width - videoW) / 2;
+    let videoY = (height - videoH) / 2;
 
-    drawingContext.shadowBlur = 15;
-    drawingContext.shadowColor = color(0, 255, 100);
-    
-    // fill para o texto não desaparecer
-    fill(0, 255, 100); 
-    textSize(vW * 0.08);
-    text("CLICA PARA CONTINUAR", vW / 2, vH / 2);
-    
-    pop();
+    // 3. Desenhar o Vídeo
+    if (memoriaVideo && memoriaVideo.elt.readyState >= 2) {
+        push();
+        imageMode(CORNER);
+        
+        // Desenha o vídeo limpo, sem escalas restritivas e sem vignette
+        image(memoriaVideo, videoX, videoY, videoW, videoH);
+        pop();
+    }
 }
 
 // Input do user
