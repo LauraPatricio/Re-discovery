@@ -1,31 +1,23 @@
-// Saber qual personagem foi clicado no menu de personagens
 let personagemAtual = "";
-
-//disco holograma
 let mostrarHolograma = false;
 
-// Estado das Tarefas
 let TarefaConcluida = {
     aerodynamic: false, crescendolls: false, some: false, super: false,
     veridis: false, voyager: false, harder: false, one: false
 };
 
-// Botões Ativos na Nave
 let btnNave = {
     btnAerodynamic: false, btnCrescendolls: false, btnSome: false, btnSuper: false,
     btnVeridis: false, btnVoyager: false, btnHarder: false, btnOne: false
 };
 
-// antiloop debug
 let _missaoConcluida = false;
 
-// Dicionários para guardar as imagens carregadas
 let buttonLine = {};
 let buttonHover = {};
 let buttonConc = {};
 let imgVidros = {};
 
-// Lista única com os nomes base dos ficheiros
 let svgNames = ["Aerodynamic", "Crescendolls", "Some", "Super", "Veridis", "Voyager", "Harder", "One"];
 
 function preloadNave() {
@@ -40,33 +32,33 @@ function preloadNave() {
     }
 }
 
-let nivelVidroAnterior = 0; // Variável para monitorizar mudanças
+let nivelVidroAnterior = 0; 
 
 function drawNave() {
     background(0);
-    
-    image(bgMenu, 0, 0, menuNewW, menuNewH);
-
     let larguraEscalada = bgNave.width * scaleRatioNave;
     let centroX = (width - larguraEscalada) / 2;
+
+    image(bgMenu, 0, 0, menuNewW, menuNewH);
+    
     push(); 
     translate(centroX, 0); 
     scale(scaleRatioNave);
-
+    
     imageMode(CORNER);
     image(bgNave, 0, 0);
 
-    // logica vidro
+    drawCockpitLife();
+
     let nivelVidroAtual = 0;
 
     if (personagensStatus.arpegius) nivelVidroAtual = 1; 
     if (personagensStatus.octave) nivelVidroAtual = 2;   
     if (personagensStatus.stella) nivelVidroAtual = 3;   
 
-    // toca som se aumenta racha
     if (nivelVidroAtual > nivelVidroAnterior) {
         tocarSomRacha(); 
-        nivelVidroAnterior = nivelVidroAtual; // nao tocar em loop
+        nivelVidroAnterior = nivelVidroAtual; 
     }
 
     if (nivelVidroAtual > 0 && imgVidros[nivelVidroAtual]) {
@@ -75,7 +67,6 @@ function drawNave() {
         blendMode(BLEND);  
     }
 
-    // botoes
     drawBtnImagem(699, 805, btnNave.btnVoyager, TarefaConcluida.voyager, buttonLine["Voyager"], buttonHover["Voyager"], buttonConc["Voyager"]);
     drawBtnImagem(1090, 906, btnNave.btnCrescendolls, TarefaConcluida.crescendolls, buttonLine["Crescendolls"], buttonHover["Crescendolls"], buttonConc["Crescendolls"]);
     drawBtnImagem(1180, 909, btnNave.btnAerodynamic, TarefaConcluida.aerodynamic, buttonLine["Aerodynamic"], buttonHover["Aerodynamic"], buttonConc["Aerodynamic"]);
@@ -87,14 +78,79 @@ function drawNave() {
 
     drawNaveHolograma();
 
-    pop();
+    pop(); 
 
     verificarProgressoNave();
 }
 
+function drawCockpitLife() {
+    push();
+
+    for(let i = 0; i < 30; i++) {
+        let sx = noise(i, 0) * 1400 + 250; 
+        let sy = noise(0, i) * 600 + 50;   
+        let alpha = noise(i, frameCount * 0.03) * 255;
+        fill(255, 255, 255, alpha);
+        noStroke();
+        ellipse(sx, sy, random(1, 3));
+    }
+
+    drawStaticScreen(698, 805, 130, 100, TarefaConcluida.voyager); 
+    drawStaticScreen(935, 830, 115, 85, TarefaConcluida.harder);  
+
+    drawColoredLight(180, 770, "circle", color(150, 0, 255)); 
+    drawColoredLight(260, 830, "circle", color(255, 255, 0)); 
+    drawColoredLight(1090, 900, "circle", color(0, 255, 0));  
+    drawColoredLight(1180, 760, "circle", color(255, 0, 0));  
+    drawColoredLight(1180, 840, "circle", color(0, 100, 255));
+    
+    pop();
+}
+
+function drawStaticScreen(cx, cy, w, h, isFinished) {
+    if (!isFinished) {
+        push();
+        noStroke();
+        rectMode(CENTER);
+        
+        drawingContext.save();
+        drawingContext.beginPath();
+        drawingContext.roundRect(cx - w/2, cy - h/2, w, h, 15); 
+        drawingContext.clip(); 
+
+        fill(20, 20, 20, 240);
+        rect(cx, cy, w, h); 
+        
+        for (let i = 0; i < 200; i++) {
+            fill(255, 255, 255, random(50, 200));
+            rect(cx + random(-w/2, w/2), cy + random(-h/2, h/2), random(3, 7), random(3, 7));
+        }
+
+        drawingContext.restore();
+        pop();
+    }
+}
+
+function drawColoredLight(cx, cy, shapeType, c) {
+    push();
+    rectMode(CENTER);
+    
+    let pulseAlpha = sin(frameCount * 0.1 + cx * 0.05) * 100 + 100;
+    
+    drawingContext.shadowBlur = 20;
+    drawingContext.shadowColor = color(red(c), green(c), blue(c), pulseAlpha); 
+    fill(red(c), green(c), blue(c), pulseAlpha * 0.8);
+    noStroke();
+    
+    if (shapeType === "circle") {
+        ellipse(cx, cy, 32, 32);
+    } else {
+        rect(cx, cy, 30, 30, 5);
+    }
+    pop();
+}
 
 function drawBtnImagem(x, y, isUnlocked, isConcluded, imgLine, imgHover, imgConc) {
-
     let fatorAjuste = 1.22;
     let w = imgLine.width * fatorAjuste;
     let h = imgLine.height * fatorAjuste;
@@ -104,7 +160,6 @@ function drawBtnImagem(x, y, isUnlocked, isConcluded, imgLine, imgHover, imgConc
 
     let virtualMouseX = (mouseX - centroX) / scaleRatioNave;
     let virtualMouseY = mouseY / scaleRatioNave;
-    // ------------------------------------------------------------------
 
     let over = virtualMouseX > x - w / 2 && virtualMouseX < x + w / 2 && virtualMouseY > y - h / 2 && virtualMouseY < y + h / 2;
 
@@ -118,25 +173,20 @@ function drawBtnImagem(x, y, isUnlocked, isConcluded, imgLine, imgHover, imgConc
         if (over) {
             cursor(HAND);
             image(imgHover, x, y, w, h);
-        } else {
-            image(imgLine, x, y, w, h);
         }
     }
     pop();
 }
 
-
 function drawNaveHolograma() {
-    // 1. Determina o nível do disco com base no progresso
     let nivelDisco = 0;
     if (TarefaConcluida.veridis && TarefaConcluida.one) nivelDisco = 4;
     else if (personagensStatus.stella) nivelDisco = 3;
     else if (personagensStatus.octave) nivelDisco = 2;
     else if (personagensStatus.arpegius) nivelDisco = 1;
 
-    if (nivelDisco === 0) return; // Se ainda não tem disco, não desenha nada
+    if (nivelDisco === 0) return; 
 
-    // 2. Coordenadas do Disco no Canto Superior Direito da Nave
     let discoX = bgNave.width - 250;
     let discoY = 180;
     let discoSize = 130; 
@@ -146,7 +196,6 @@ function drawNaveHolograma() {
     push();
     imageMode(CENTER);
     
-    // Rato virtual para verificar o hover sobre o disco
     let larguraEscalada = bgNave.width * scaleRatioNave;
     let centroX = (width - larguraEscalada) / 2;
     let virtualMouseX = (mouseX - centroX) / scaleRatioNave;
@@ -156,7 +205,7 @@ function drawNaveHolograma() {
     
     if (hoverDisco && !mostrarHolograma) {
         cursor(HAND);
-        discoSize *= 1.1; // Cresce no hover
+        discoSize *= 1.1; 
         drawingContext.shadowBlur = 20;
         drawingContext.shadowColor = color(255, 215, 0);
     }
@@ -164,15 +213,12 @@ function drawNaveHolograma() {
     image(imgD, discoX, discoY, discoSize, discoSize * proporcao);
     pop();
 
-    // 3. Desenhar a Projeção Holográfica
     if (mostrarHolograma) {
         push();
-        // Fundo escuro esverdeado/ciano para escurecer a nave
         noStroke();
-        fill(0, 0, 0, 220); 
+        fill(0, 0, 0, 175); 
         rect(0, 0, bgNave.width, bgNave.height);
 
-        // Brilho Néon Geral
         drawingContext.shadowBlur = 25;
         drawingContext.shadowColor = color(0, 255, 255);
 
@@ -180,48 +226,41 @@ function drawNaveHolograma() {
         let cx = bgNave.width / 2;
         let cy = bgNave.height / 2; 
         
-        // Tamanho das Cartas
         let w = bgNave.width * 0.15;
         let h = w * (imgBaryl.height / imgBaryl.width);
         let gap = bgNave.width * 0.18;
 
-        // Aplica o "Filtro Holográfico": Todas as cartas ficam azul-ciano transparentes!
-        //tint(0, 0, 0, 135); 
+       // tint(0, 255, 255, 190); 
 
-        // Função local que desenha cada carta
         function drawHoloCard(img, x, isUnlocked) {
             if (isUnlocked) {
                 image(img, x, cy, w, h);
             } else {
                 push();
-                tint(0, 100, 100, 80); // Se estiver bloqueado, fica quase invisível
+                tint(0, 100, 100, 80); 
                 image(img, x, cy, w, h);
                 pop();
             }
         }
 
-        // Desenha os 4 personagens em linha
         drawHoloCard(imgBaryl, cx - (gap * 1.5), personagensStatus.baryl);
         drawHoloCard(imgArpegius, cx - (gap * 0.5), personagensStatus.arpegius);
         drawHoloCard(imgOctave, cx + (gap * 0.5), personagensStatus.octave);
         drawHoloCard(imgStella, cx + (gap * 1.5), personagensStatus.stella);
 
-        // Texto da Interface
         textAlign(CENTER, CENTER);
         textFont('Impact');
         fill(0, 255, 255);
         textSize(bgNave.width * 0.04);
         text("PROGRESS", cx, cy - h/2 - 80);
-        
+    
+       
     }
 }
 
-
-
-// Configura quais botões aparecem dependendo do personagem
 function configurarBotoesNave() {
     for (let key in btnNave) { btnNave[key] = false; }
-    _missaoConcluida = false; // reset ao entrar com novo personagem
+    _missaoConcluida = false; 
 
     if (personagemAtual === "BARYL") {
         btnNave.btnVoyager = true;
@@ -237,7 +276,6 @@ function configurarBotoesNave() {
         btnNave.btnOne = true;
     }
 }
-
 
 function verificarProgressoNave() {
     if (_missaoConcluida) return; 
@@ -260,7 +298,7 @@ function verificarProgressoNave() {
     else if (personagemAtual === "STELLA" && TarefaConcluida.some && TarefaConcluida.one) {
         destino = "VITORIA";
         concluiu = true;
-        isFinalVictory = true; // musica continua em loop pro fim
+        isFinalVictory = true; 
     }
 
     if (concluiu) {
@@ -274,22 +312,17 @@ function verificarProgressoNave() {
     }
 }
 
-
-
-   function handleNaveClick() {
+function handleNaveClick() {
     let larguraEscalada = bgNave.width * scaleRatioNave;
     let centroX = (width - larguraEscalada) / 2;
     let virtualMouseX = (mouseX - centroX) / scaleRatioNave;
     let virtualMouseY = mouseY / scaleRatioNave;
 
-    // --- 1. LÓGICA DO HOLOGRAMA ---
     if (mostrarHolograma) {
-        // Se clicar em qualquer lado com o holograma aberto, fecha-o
         mostrarHolograma = false;
-        return; // Impede que as tarefas por trás sejam clicadas acidentalmente!
+        return; 
     }
 
-    // --- 2. CLIQUE NO DISCO (Canto Superior Direito) ---
     let nivelDisco = 0;
     if (TarefaConcluida.veridis && TarefaConcluida.one) nivelDisco = 4;
     else if (personagensStatus.stella) nivelDisco = 3;
@@ -301,12 +334,11 @@ function verificarProgressoNave() {
         let discoY = 180;
         let discoSize = 130;
         if (dist(virtualMouseX, virtualMouseY, discoX, discoY) < discoSize / 2) {
-            mostrarHolograma = true; // Abre o holograma
+            mostrarHolograma = true; 
             return;
         }
     }
 
-    // --- 3. Lógica original dos botões da nave ---
     function clickBtn(x, y, img) {
         let fatorAjuste = 1.22; 
         let w = img.width * fatorAjuste;
@@ -314,7 +346,6 @@ function verificarProgressoNave() {
         return virtualMouseX > x - w / 2 && virtualMouseX < x + w / 2 && virtualMouseY > y - h / 2 && virtualMouseY < y + h / 2;
     }
 
-    // Verificações de clique
     if (btnNave.btnVoyager && !TarefaConcluida.voyager && clickBtn(699, 805, buttonLine["Voyager"])) goTo("TAREFA6");
     if (btnNave.btnCrescendolls && !TarefaConcluida.crescendolls && clickBtn(1090, 906, buttonLine["Crescendolls"])) goTo("TAREFA3");
     if (btnNave.btnAerodynamic && !TarefaConcluida.aerodynamic && clickBtn(1180, 909, buttonLine["Aerodynamic"])) goTo("TAREFA1");

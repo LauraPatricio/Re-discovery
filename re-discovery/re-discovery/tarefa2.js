@@ -11,7 +11,7 @@ let sequenceIndex = 0;
 let displayWord = "";
 let loseTimer = 0;
 
-//variaves pop-up tarefa2
+//variaveis pop-up tarefa2
 let t2_popX, t2_popY, t2_popW, t2_popH;
 
 let wordSounds = {}; 
@@ -76,17 +76,16 @@ function drawTarefa2() {
 
     noStroke();
     fill(0, 0, 0, 180);
-    rect(0, 0, width, height);
+    rect(0, 0, width, height); // Película escura
 
     push();
     imageMode(CORNER);
-    image(bgImg2, t2_popX, t2_popY, t2_popW, t2_popH); 
+    image(bgImg2, t2_popX, t2_popY, t2_popW, t2_popH); // Imagem da tarefa
     pop();
 
-    // logica estados/ instruções e jogo
+    // ── LÓGICA DE ESTADOS (INSTRUÇÕES VS JOGO) ──
     if (tarefa2State === "INSTRUCTIONS") {
-
-    
+        // Mostra o ecrã de instruções uniformizado
         push();
         translate(t2_popX, t2_popY);
         scale(t2_popW / WIDE_WIDTH, t2_popH / WIDE_HEIGHT); 
@@ -97,7 +96,6 @@ function drawTarefa2() {
         pop();
     } 
     else {
-       
         if (tarefa2State === 'MEMORIZE') {
             handleMemorizePhase();
         } else if (tarefa2State === 'PLAY') {
@@ -108,7 +106,7 @@ function drawTarefa2() {
             handleLoseState();
         }
 
-        drawButtonsTarefa2(); // Só desenha os botões se o jogo já tiver começado
+        drawButtonsTarefa2(); 
     }
 }
 
@@ -150,6 +148,25 @@ function handleLoseState() {
 function drawButtonsTarefa2() {
     for (let b of buttons2) {
         image(buttonImages[b.word], b.x, b.y, b.w, b.h);
+
+        // Deteta se o rato está por cima E a ser pressionado
+        let isPressed = mouseIsPressed && mouseX > b.x && mouseX < b.x + b.w && mouseY > b.y && mouseY < b.y + b.h;
+
+        if (tarefa2State !== 'PLAY') {
+            push();
+            noStroke();
+            fill(0, 0, 0, 160); 
+            rect(b.x, b.y, b.w, b.h, 5); 
+            pop();
+        } 
+        // Película cinzenta quando pressionado 
+        else if (isPressed) {
+            push();
+            noStroke();
+            fill(150, 150, 150, 150); 
+            rect(b.x, b.y, b.w, b.h, 5); 
+            pop();
+        }
     }
 }
 
@@ -177,19 +194,18 @@ function drawNeonPhrase(sequence, col) {
 }
 
 function mousePressedTarefa2() {
-    // Verificar o botão start no menu de instruções
     if (tarefa2State === "INSTRUCTIONS") {
         if (checkStartClick()) {
-            tarefa2State = "MEMORIZE"; // Muda de estado para começar a piscar as palavras
+            tarefa2State = "MEMORIZE"; 
         }
         return;
     }
 
-    //logica jogo
     if (tarefa2State !== 'PLAY') return;
 
     for (let b of buttons2) {
         if (mouseX > b.x && mouseX < b.x + b.w && mouseY > b.y && mouseY < b.y + b.h) {
+            if (typeof somClick !== 'undefined' && somClick.isLoaded()) somClick.play();
             if (wordSounds[b.word]) wordSounds[b.word].play(); 
             checkInput(b.word);
             break;
@@ -198,7 +214,7 @@ function mousePressedTarefa2() {
 }
 
 function checkInput(clickedWord) {
-    playerSequence2.push(clickedWord);
+    playerSequence2.push(clickedWord); // Erro do X corrigido aqui!
 
     if (playerSequence2.length === correctSequence.length) {
         let isCorrect = true;
@@ -216,15 +232,13 @@ function checkInput(clickedWord) {
             TarefaConcluida.harder = true;
 
             setTimeout(() => {
-                //Reset automático para a próxima vez que jogar
+                //Reset automático
                 generateRandomSequence(4);
                 playerSequence2 = [];
                 sequenceIndex = 0;
                 displayWord = "";
                 
                 tarefa2State = "INSTRUCTIONS";
-                
-                // chama a memoria
                 concluirComMemoria("harder"); 
             }, 1500);
 
@@ -242,7 +256,6 @@ function generateRandomSequence(len) {
     }
 }
 
-// Para redimensionar a janela 
 function windowResizedTarefa2() {
     initializeButtonsTarefa2();
 }

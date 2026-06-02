@@ -132,7 +132,8 @@ function drawTarefa1() {
 }
 
 function drawVisualFeedbacks() {
-    for (let i = 0; i < 9; i++) {
+
+   for (let i = 0; i < 9; i++) {
         if (visualSquares[i].active) {
             noStroke();
             fill(255, 255, 255, 180);
@@ -141,12 +142,18 @@ function drawVisualFeedbacks() {
     }
 
     for (let i = 0; i < 9; i++) {
-        if (interactiveButtons[i].active) {
+        let b = interactiveButtons[i];
+        
+        // Deteta se o rato está por cima E a ser pressionado
+        let isPressed = mouseIsPressed && mouseX > b.x && mouseX < b.x + b.size && mouseY > b.y && mouseY < b.y + b.size;
+
+        if (b.active) {
             noStroke();
-            fill(0, 255, 255, 120);
-            rect(interactiveButtons[i].x, interactiveButtons[i].y, interactiveButtons[i].size, interactiveButtons[i].size);
-        }
+            fill(150, 150, 150, 150); // Tom acinzentado semi-transparente
+            rect(b.x, b.y, b.size, b.size);
+        } 
     }
+
 }
 
 function drawResultMessage() {
@@ -233,6 +240,7 @@ function mousePressedTarefa1() {
         }
     }
 }
+
 function handlePlayerInput(idx) {
     interactiveButtons[idx].active = true;
     notes[idx].play();
