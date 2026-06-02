@@ -71,6 +71,7 @@ function concluirComMemoria(tarefaKey) {
 function drawMemoriaScreen() {
     // 1. Fundo da Nave
     push();
+    image(bgMenu, 0, 0, menuNewW, menuNewH);
     imageMode(CENTER);
     image(bgNave, width / 2, height / 2, naveNewW, naveNewH);
     pop();
