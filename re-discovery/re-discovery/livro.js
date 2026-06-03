@@ -73,7 +73,7 @@ function drawSeta() {
     pop();
 }
 
-// Lógica de click no livro
+//click no livro
 function handleLivroClick() {
     
     let moverParaDireita = 0.25; 

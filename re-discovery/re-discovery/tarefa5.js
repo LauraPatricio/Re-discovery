@@ -39,7 +39,7 @@ function drawTarefa5() {
 
   noStroke();
   fill(0, 0, 0, 180);
-  rect(0, 0, width, height); // Película escura
+  rect(0, 0, width, height); 
 
   push();
   translate(widePopX, widePopY);
@@ -85,21 +85,19 @@ function drawTarefa5() {
 }
 
 function drawDebugButtons5() {
-    // Calculamos o rato virtual aqui para verificar o hover
     let virtualMouseX = (mouseX - widePopX) / (widePopW / WIDE_WIDTH);
     let virtualMouseY = (mouseY - widePopY) / (widePopH / WIDE_HEIGHT);
 
     for (let i = 0; i < bY_positions5.length; i++) {
         let isPressed = mouseIsPressed && virtualMouseX > bX5 && virtualMouseX < bX5 + bW5 && virtualMouseY > bY_positions5[i] && virtualMouseY < bY_positions5[i] + bH5;
 
-        // Os botões base (ciano, vermelho e linhas brancas) foram totalmente removidos para ficarem invisíveis.
         
-        // ── O botão SÓ aparece (película cinzenta) quando pressionado ──
+        // o botão SÓ aparece (película cinzenta) quando pressionado
         if (isPressed && tarefa5State === 'PLAY') {
             push();
             noStroke();
-            fill(150, 150, 150, 150); // Tom acinzentado semi-transparente
-            rect(bX5, bY_positions5[i], bW5, bH5, 5); // Adicionei o '5' para arredondar os cantos igual à Tarefa 2
+            fill(150, 150, 150, 150);
+            rect(bX5, bY_positions5[i], bW5, bH5,5); 
             pop();
         }
     }
@@ -127,7 +125,7 @@ function mousePressedTarefa5() {
             if (virtualMouseX > bX5 && virtualMouseX < bX5 + bW5 &&
                 virtualMouseY > bY_positions5[currentRing] && virtualMouseY < bY_positions5[currentRing] + bH5) {
                 
-                if (typeof somClick !== 'undefined' && somClick.isLoaded()) somClick.play(); // ── NOVO SOM ──
+                if (typeof somClick !== 'undefined' && somClick.isLoaded()) somClick.play(); 
                 
                 if (rings[currentRing].checkSync()) {
                     rings[currentRing].isSynced = true;
@@ -169,7 +167,7 @@ function showWinScreenUniform() {
 
 
 function keyPressedTarefa5() {
-  // Esta função fica vazia ou servir para atalhos de debug
+  
 }
 
 function stopAllTracks() {

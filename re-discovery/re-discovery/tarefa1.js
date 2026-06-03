@@ -74,7 +74,6 @@ function initializeGrids() {
 }
 
 function drawTarefa1() {
-    //Desenha a nave no fundo
     push();
     image(bgMenu, 0, 0, menuNewW, menuNewH);
     imageMode(CENTER);
@@ -90,11 +89,10 @@ function drawTarefa1() {
     image(bgImg, popX, popY, popW, popH); 
     pop();
 
-    // ── LÓGICA DE ESTADOS (MUDANÇA AQUI) ──
+    // logica mudança de estados
     if (tarefa1State === "INSTRUCTIONS") {
         push();
         translate(popX, popY);
-        // CORREÇÃO: Usar as variáveis globais do pop-up para tapar os buracos!
         scale(popW / WIDE_WIDTH, popH / WIDE_HEIGHT); 
         drawTaskInstructions(
             "Aerodynamic", 
@@ -109,7 +107,7 @@ function drawTarefa1() {
         if (isShowing) {
             if (millis() - lastStepTime > 600) {
 
-                // Desativa todos os brilhos antes de mostrar o próximo
+                // desativa todos os brilhos antes de mostrar o próximo
                 for (let i = 0; i < 9; i++) visualSquares[i].active = false;
 
                 if (step < sequence.length) {
@@ -149,7 +147,7 @@ function drawVisualFeedbacks() {
 
         if (b.active) {
             noStroke();
-            fill(150, 150, 150, 150); // Tom acinzentado semi-transparente
+            fill(150, 150, 150, 150);
             rect(b.x, b.y, b.size, b.size);
         } 
     }
@@ -202,7 +200,6 @@ function showFailScreenUniform() {
     textAlign(CENTER, CENTER);
     textFont('Impact');
     
-    // Título em Vermelho Néon
     drawingContext.shadowBlur = 15;
     drawingContext.shadowColor = color(255, 0, 0);
     fill(255, 0, 0);
@@ -217,12 +214,11 @@ function drawStartScreen() {
     fill(255);
     textAlign(CENTER, CENTER);
     textFont('Impact');
-    textSize(popW * 0.03); // Tamanho de texto relativo ao pop-up
+    textSize(popW * 0.03); 
     text("AERODYNAMIC: MEMORIZE THE PATTERN\nCLICK TO START", width / 2, height / 2);
 }
 
 function mousePressedTarefa1() {
-    // Verificar se estar no ecrã de instruções
     if (tarefa1State === "INSTRUCTIONS") {
         if (checkStartClick()) {
             tarefa1State = "PLAY"; 

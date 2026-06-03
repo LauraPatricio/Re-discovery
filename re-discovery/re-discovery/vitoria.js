@@ -1,7 +1,5 @@
-// ═══════════════════════════════════════════════
-//  VITORIA.JS — Cena final animada
-//
-//  ORDEM DE DESENHO (de baixo para cima):
+
+//  ORDEM DE DESENHO
 //  1. Nave
 //  2. Disco  ← ABAIXO do vidro
 //  3. Vidro (blendMode SCREEN) ← SEMPRE O ÚLTIMO, cobre tudo
@@ -15,7 +13,7 @@ let _discoH        = 0;
 let _mostrarVidro4  = false;
 let _noiseDisparado = false;
 
-// ── Entrada ───────────────────────────────────
+//Entrada 
 function iniciarCenaFinal() {
     _discoW = width * 0.15;
     let proporcao = disco[4].height / disco[4].width;
@@ -32,10 +30,10 @@ function iniciarCenaFinal() {
     goTo("VITORIA");
 }
 
-// ── Draw ──────────────────────────────────────
+// Draw
 function drawVitoriaScreen() {
 
-    // FASE 4: Quarto 2 (após noise)
+    //Quarto 2 após noise
     if (vitoriaFase === 4 && transitionType === "NONE") {
         imageMode(CORNER);
         image(bgQuarto2Img, 0, 0, quartoNewW, quartoNewH);
@@ -46,7 +44,7 @@ function drawVitoriaScreen() {
     let larguraEscalada = bgNave.width * scaleRatioNave;
     let centroX = (width - larguraEscalada) / 2;
 
-    // ── CAMADA 1: NAVE ────────────────────────
+    // CAMADA 1: NAVE
     image(bgMenu, 0, 0, menuNewW, menuNewH);
     
     push();
@@ -56,7 +54,7 @@ function drawVitoriaScreen() {
     image(bgNave, 0, 0);
     pop();
 
-    // ── CAMADA 2: DISCO (abaixo do vidro) ─────
+    // CAMADA 2: DISCO (abaixo do vidro)
     push();
     imageMode(CENTER);
     drawingContext.shadowBlur  = 30;
@@ -65,8 +63,7 @@ function drawVitoriaScreen() {
     drawingContext.shadowBlur = 0;
     pop();
 
-    // ── CAMADA 3: VIDRO (sempre por cima de tudo, incluindo o disco) ──
-    // BUG 2 CORRIGIDO: desenhado DEPOIS do disco em passo separado
+    // ── CAMADA 3: VIDRO (sempre por cima de tudo)
     push();
     translate(centroX, 0);
     scale(scaleRatioNave);
@@ -80,9 +77,8 @@ function drawVitoriaScreen() {
     blendMode(BLEND);
     pop();
 
-    // ── LÓGICA DAS FASES ──────────────────────
-
-    // FASE 1: disco sobe de fora do ecrã até ao centro
+    //LOGICA FASES
+    //disco sobe de fora do ecrã até ao centro
     if (vitoriaFase === 1) {
         let alvoY = height / 2;
         _discoY = lerp(_discoY, alvoY, 0.04);
@@ -93,7 +89,7 @@ function drawVitoriaScreen() {
         }
     }
 
-    // FASE 2: zoom ~2.26x
+    //zoom
     else if (vitoriaFase === 2) {
         _discoScale += 0.018;
         if (_discoScale >= 2.26) {
@@ -102,7 +98,7 @@ function drawVitoriaScreen() {
         }
     }
 
-    // FASE 3: mostra vidro[4], pausa 600ms, dispara NOISE
+    //mostra vidro[4], pausa 600ms, dispara NOISE
     else if (vitoriaFase === 3) {
         _mostrarVidro4 = true;
         if (!_noiseDisparado) {
@@ -116,7 +112,7 @@ function drawVitoriaScreen() {
 }
 
 function _drawFinalUI() {
-    // Título final ou Créditos rápidos (opcional)
+    // Título final
     push();
     textAlign(CENTER, CENTER);
     textFont('Impact');
@@ -128,7 +124,7 @@ function _drawFinalUI() {
     text("RE-DISCOVERY COMPLETE", width / 2, height * 0.45);
     pop();
 
-    // Atualiza e Desenha os botões usando as funções globais do menu.js
+    // Atualiza e Desenha os botões 
     updateButton(restartBtnFinal);
     updateButton(aboutBtnFinal);
 

@@ -49,7 +49,7 @@ function concluirComMemoria(tarefaKey) {
     }
 
     memoriaVideo.onended(() => {
-        // Se isFinalVictory for tru esta função no menu.js não faz nada
+        // se isFinalVictory for tru esta função no menu.js não faz nada
         pararTodosSonsTarefas(); 
         
         if (sonsExtraMemoria[currentMemoriaKey]) {
@@ -69,45 +69,41 @@ function concluirComMemoria(tarefaKey) {
 }
 
 function drawMemoriaScreen() {
-    // 1. Fundo da Nave
     push();
     image(bgMenu, 0, 0, menuNewW, menuNewH);
     imageMode(CENTER);
     image(bgNave, width / 2, height / 2, naveNewW, naveNewH);
     pop();
 
-    // 2. Película escura
+   
     noStroke();
     fill(0, 0, 0, 180);
     rect(0, 0, width, height);
 
-    // --- CÁLCULO LIVRE PARA O VÍDEO (MAIOR E EM 4:3) ---
-    // O vídeo vai ocupar 85% da altura da tua janela
-    let videoH = height * 0.75; 
-    let videoW = videoH * (4 / 3); // Garante a proporção matemática 4:3
+    //calc para manter o ratio
 
-    // Prevenção: Se o ecrã for muito estreito, ajustamos pela largura em vez da altura
+    let videoH = height * 0.75; 
+    let videoW = videoH * (4 / 3); 
+
+    // se o ecrã for muito estreito, ajusta pela largura em vez da altura
     if (videoW > width * 0.9) {
         videoW = width * 0.9;
         videoH = videoW * (3 / 4);
     }
 
-    // Calcula as coordenadas exatas para centrar perfeitamente no ecrã
     let videoX = (width - videoW) / 2;
     let videoY = (height - videoH) / 2;
 
-    // 3. Desenhar o Vídeo
+   
     if (memoriaVideo && memoriaVideo.elt.readyState >= 2) {
         push();
         imageMode(CORNER);
         
-        // Desenha o vídeo limpo, sem escalas restritivas e sem vignette
         image(memoriaVideo, videoX, videoY, videoW, videoH);
         pop();
     }
 }
 
-// Input do user
 function handleMemoriaClick() {
     if (memoriaEnded) {
         pararMemoria();

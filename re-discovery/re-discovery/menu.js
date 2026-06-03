@@ -8,14 +8,14 @@ let naveNewW, naveNewH, menuNewW, menuNewH, quartoNewW, quartoNewH;
 let fadeAlpha = 0;
 let isFading = false;
 let nextState = "";
-let transitionType = "NONE"; // Começa sem transição
-let noiseDuration = 30;      // Duração da estática (30 frames = aprox. meio segundo)
+let transitionType = "NONE";
+let noiseDuration = 30;     
 let noiseCounter = 0;
 
 let somAmbienteNave;
 let isFinalVictory = false;
 
-// Proporção popup
+// proporcao popup
 let widePopX, widePopY, widePopW, widePopH;
 const WIDE_WIDTH = 800;
 const WIDE_HEIGHT = 450;
@@ -44,7 +44,7 @@ function preload() {
     preloadMemoria();
 }
 
-// Função para tocar o som de vidro rachado
+// func para tocar o som de vidro rachado
 function tocarSomRacha() {
     if (somGlass && somGlass.isLoaded()) {
         somGlass.setVolume(0.8);
@@ -89,7 +89,7 @@ function calcularTamanhosFundo() {
     naveNewW = bgNave.width * scaleRatioNave;
     naveNewH = bgNave.height * scaleRatioNave;
     
-    // Atualizado para usar as variáveis protegidas
+    // =usar as variaveis protegidas
     menuNewW = bgMenuW * scaleRatioMenu;
     menuNewH = bgMenuH * scaleRatioMenu;
     
@@ -115,10 +115,10 @@ function drawUniversalExit() {
     push();
     imageMode(CENTER);
 
-    // Efeito de passar o rato por cima (Hover) 
+    // hover
     if (dist(mouseX, mouseY, ex, ey) < size / 2) {
         cursor(HAND);
-        tint(255, 150, 150); // Fica ligeiramente vermelho
+        tint(255, 150, 150); 
     }
 
     image(exitImg, ex, ey, size, size);
@@ -135,7 +135,7 @@ function checkUniversalExit() {
     let ex = px + pw + 25; 
     let ey = py;
 
-    // Se o clique foi em cima da bola de Exit
+    // se o clique foi em cima de Exit
     if (dist(mouseX, mouseY, ex, ey) < size / 2) {
         resetCurrentTask(); 
         goTo("NAVE");       
@@ -145,7 +145,7 @@ function checkUniversalExit() {
 }
 
 function resetCurrentTask() {
-    // Parar todos os sons antes de qualquer reset
+    // parar todos os sons antes de qualquer reset
     pararTodosSonsTarefas();
 
     if (gameState === "TAREFA1") {
@@ -193,7 +193,7 @@ function calcularPopUpWide() {
     widePopY = (height - widePopH) / 2;
 }
 
-// Reajustar tamanho 
+// reajustar tamanho 
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
     
@@ -205,7 +205,7 @@ function windowResized() {
     windowResizedTarefa2();
 }
 
-// Botões responsivos 
+// botões responsivos 
 function initButtons() {
     startBtn = {
         x: width * 0.5, y: height * 0.6,
@@ -236,7 +236,6 @@ function draw() {
     if (transitionType !== "NOISE" && !isFading) cursor(ARROW);
 
     // DESENHAR O CENÁRIO ATUAL 
-    
     if (gameState === "MENU") {
         drawMenu();
     } else if (gameState === "ABOUT") {
@@ -271,7 +270,7 @@ function draw() {
         drawVitoriaScreen();
     }
 
-    // ELEMENTOS DE UI SOBREPOSTOS 
+    // ELEMENTOS DE SOBREPOSTOS 
     if (gameState.startsWith("TAREFA")) {
         drawUniversalExit();
     }
@@ -327,7 +326,7 @@ function drawButton(btn) {
     pop();
 }
 
-// Sistema Dinâmico de Transições
+// sistema transicoes
 function goTo(novoEstado, tipo = "NONE") {
     nextState = novoEstado;
     transitionType = tipo;
@@ -347,7 +346,7 @@ function goTo(novoEstado, tipo = "NONE") {
         gameState = novoEstado;
     }
 
-    // LÓGICA DE ÁUDIO AMBIENTE
+    // audio ambiente
     if (somAmbienteNave && somAmbienteNave.isPlaying()) {
         if (novoEstado.startsWith("TAREFA")) {
             somAmbienteNave.setVolume(0.1, 0.5);
@@ -480,8 +479,7 @@ function mouseDragged() {
 }
 
 function drawTaskInstructions(title, description) {
-    
-    // Fundo escuro sobre a tarefa
+
     fill(0, 0, 0, 230);
     rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
 
@@ -489,7 +487,7 @@ function drawTaskInstructions(title, description) {
     textAlign(CENTER, CENTER);
     textFont('Impact');
     
-    // Título em Ciano com Neon
+
     drawingContext.shadowBlur = 15;
     drawingContext.shadowColor = color(0, 255, 255);
     fill(0, 255, 255);
@@ -553,10 +551,8 @@ function checkStartClick() {
 
 // Ecrã About 
 function drawAboutScreen() {
-    // Desenha o fundo do menu
     image(bgMenu, 0, 0, menuNewW, menuNewH);
     
-    // Película escura
     noStroke();
     fill(0, 0, 0, 220);
     rect(0, 0, width, height);
@@ -565,14 +561,14 @@ function drawAboutScreen() {
     textAlign(CENTER, CENTER);
     textFont('Impact');
 
-    // Título Neon Ciano
+  
     drawingContext.shadowBlur = 15;
     drawingContext.shadowColor = color(0, 255, 255);
     fill(0, 255, 255);
     textSize(width * 0.04);
     text("ABOUT THE PROJECT", width / 2, height * 0.25);
 
-    // Corpo de Texto
+    
     drawingContext.shadowBlur = 0;
     textFont('Futura');
     textStyle(NORMAL);

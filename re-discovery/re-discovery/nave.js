@@ -230,7 +230,6 @@ function drawNaveHolograma() {
         let h = w * (imgBaryl.height / imgBaryl.width);
         let gap = bgNave.width * 0.18;
 
-       // tint(0, 255, 255, 190); 
 
         function drawHoloCard(img, x, isUnlocked) {
             if (isUnlocked) {

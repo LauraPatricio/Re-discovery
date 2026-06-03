@@ -11,7 +11,7 @@ let som6;
 function preloadTarefa6() {
   bgImg6 = loadImage('imagens/tarefa6.png');
   rocketImg6 = loadImage('imagens/rocket.png');
-  som6 = loadSound('sons/voyager.mp3'); // (Aproveitei para corrigir um pequeno erro de digitação aqui)
+  som6 = loadSound('sons/voyager.mp3'); 
 }
 
 function setupTarefa6() {
@@ -29,7 +29,6 @@ function setupTarefa6() {
 }
 
 function drawTarefa6() {
-  // ── EFEITO POP-UP ──
   push();
   image(bgMenu, 0, 0, menuNewW, menuNewH);
   imageMode(CENTER);
@@ -47,7 +46,7 @@ function drawTarefa6() {
   imageMode(CORNER);
   image(bgImg6, 0, 0, WIDE_WIDTH, WIDE_HEIGHT);
 
-  // ── LÓGICA DE ESTADOS (INSTRUÇÕES VS JOGO) ──
+
   if (tarefa6State === "INSTRUCTIONS") {
     drawTaskInstructions(
         "Voyager", 
@@ -55,8 +54,7 @@ function drawTarefa6() {
     );
   } 
   else {
-    // NOTA: O som automático foi removido daqui para termos controlo total.
-    
+   
     // logica jogo
     if (tarefa6State === "START") {
       drawOverlay6("VOYAGER", "HOLD MOUSE TO GUIDE ROCKET");
@@ -141,6 +139,7 @@ function updateGame6() {
     if (minD > tolerance6) {
       tarefa6State = "FAIL";
       isDragging6 = false; 
+      
       // Para a música imediatamente
       if (som6 && som6.isPlaying()) som6.stop(); 
     }

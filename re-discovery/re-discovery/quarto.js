@@ -17,7 +17,7 @@ function preloadQuarto() {
 }
 
 function drawQuartoScreen() {
-    // 1. Desenha o fundo do quarto (os tamanhos já vêm do menu.js)
+    //desenha o fundo do quarto (os tamanhos já vêm do menu.js)
     imageMode(CORNER);
     image(bgQuartoImg, 0, 0, quartoNewW, quartoNewH);
 
@@ -26,7 +26,7 @@ function drawQuartoScreen() {
     let posX_Relativa = 0.78;
     let posY_Relativa = 0.17;
 
-    // posição exata de x e y
+    // posição de x e y
     ox = quartoNewW * posX_Relativa;
     oy = quartoNewH * posY_Relativa;
 

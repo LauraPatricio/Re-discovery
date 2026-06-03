@@ -1,20 +1,19 @@
 let bgImg8, vinylCenterImg;
 let somDrums, somOneMore; // Faixas sincronizadas
 let somStatic;           // Ruído do vinil
-let winDelayTimer8 = 0;   // Timer de 5 segundos
+let winDelayTimer8 = 0;  
 let tarefa8State = "INSTRUCTIONS";
-let sliderY = 270; // (Era 300) Ajustado para a proporção 800x450
+let sliderY = 270; 
 let sliderSpeed = 4;
 let sliderDirection = 1;
 
-// --- COORDENADAS AJUSTADAS PARA 800x450 ---
-let rectX = 92;      // (Era 104)
-let rectW = 114;     // (Era 128)
-let greenZoneY = 234; // (Era 260)
-let greenZoneH = 72;  // (Era 80)
+let rectX = 92;     
+let rectW = 114;    
+let greenZoneY = 234; 
+let greenZoneH = 72;
 
-let vinylX = 537;    // (Era 604)
-let vinylY = 225;    // (Era 250)
+let vinylX = 537;   
+let vinylY = 225;  
 // --------------------------------------------
 
 let rotationAngle = 0;
@@ -27,7 +26,7 @@ function preloadTarefa8() {
   bgImg8 = loadImage('imagens/tarefa8.png');
   vinylCenterImg = loadImage('imagens/Daft_Punk_Discovery.png');
   
-  // Carregamento dos sons conforme as referências
+ 
   somDrums = loadSound('sons/drumsOMT.mp3');
   somOneMore = loadSound('sons/one more time.mp3');
   somStatic = loadSound('sons/vinyl static.mp3');
@@ -38,7 +37,6 @@ function setupTarefa8() {
 }
 
 function drawTarefa8() {
-  // ── EFEITO POP-UP ──
   push();
   image(bgMenu, 0, 0, menuNewW, menuNewH);
   imageMode(CENTER);
@@ -49,7 +47,6 @@ function drawTarefa8() {
   fill(0, 0, 0, 180);
   rect(0, 0, width, height); 
 
-  // ── ESCALA PARA O POP-UP WIDESCREEN ──
   push();
   translate(widePopX, widePopY);
   scale(widePopW / WIDE_WIDTH, widePopH / WIDE_HEIGHT);
@@ -57,7 +54,6 @@ function drawTarefa8() {
   imageMode(CORNER);
   image(bgImg8, 0, 0, WIDE_WIDTH, WIDE_HEIGHT);
 
-  // ── LÓGICA DE ESTADOS (INSTRUÇÕES VS JOGO) ──
   if (tarefa8State === "INSTRUCTIONS") {
     drawTaskInstructions(
         "One More Time", 
@@ -65,9 +61,7 @@ function drawTarefa8() {
     );
   } 
   else {
-    // --- TUDO O QUE ESTÁ AQUI DENTRO SÓ ACONTECE DEPOIS DO START ---
     drawVinylLabel();
-
     if (tarefa8phase === 1) {
       handleSliderPhase();
     } 
@@ -105,7 +99,6 @@ function drawVinylLabel() {
   translate(vinylX, vinylY);
   rotate(rotationAngle);
   imageMode(CENTER);
-  // Tamanho redimensionado proporcionalmente de 155 para 138
   image(vinylCenterImg, 0, 0, 138, 138); 
   pop();
 }
@@ -117,7 +110,7 @@ function handleSliderPhase() {
 
   sliderY += sliderSpeed * sliderDirection;
   
-  // Limites do slider redimensionados proporcionalmente de 430/140 para 387/126
+  // Limites do slider redimensionados
   if (sliderY > 387 || sliderY < 126) sliderDirection *= -1;
 
   stroke(0, 255, 255);
@@ -131,7 +124,6 @@ function handleSliderPhase() {
 }
 
 function handleVinylPhase() {
-  // Conversão do rato virtual para o vinil detetar a rotação corretamente
   let virtualMouseX = (mouseX - widePopX) / (widePopW / WIDE_WIDTH);
   let virtualMouseY = (mouseY - widePopY) / (widePopH / WIDE_HEIGHT);
 
@@ -151,7 +143,7 @@ function handleVinylPhase() {
     isSpinning = false;
   }
 
-  // --- PROGRESS BAR: SMALLER WIDTH E CENTRALIZADA NO NOSSO WIDE_WIDTH ---
+  // PROGRESS BAR: SMALLER WIDTH E CENTRALIZADA NO WIDE_WIDTH
   let barWidth = 150; 
   let progress = map(totalRotation, 0, TWO_PI * targetRotations, 0, barWidth);
   
@@ -178,7 +170,7 @@ function mousePressedTarefa8() {
       tarefa8State = "PLAY";
       tarefa8phase = 1;
 
-      // INICIAR ÁUDIO APÓS INTERAÇÃO HUMANA
+      // INICIAR ÁUDIO APÓS INTERAÇÃO 
       if (somStatic && somStatic.isLoaded() && !somStatic.isPlaying()) {
           somStatic.loop(); 
           somStatic.setVolume(0);
@@ -206,16 +198,13 @@ function showFinalWin() {
   textAlign(CENTER, CENTER);
   textFont('Impact'); // Fonte uniforme
   
-  // Efeito Neon Verde consistente com as outras tarefas[cite: 1, 8]
   drawingContext.shadowBlur = 25;
   drawingContext.shadowColor = color(0, 255, 100);
   
   fill(0, 255, 100);
-  // Tamanho proporcional ao pop-up (usando a lógica da Tarefa 1: widePopW * 0.08)[cite: 1]
   textSize(WIDE_WIDTH * 0.08); 
   text("IDENTITY RECOVERED", WIDE_WIDTH / 2, WIDE_HEIGHT / 2 - 20);
   
-  // Reset do brilho para o subtítulo
   drawingContext.shadowBlur = 0;
   fill(255);
   textSize(WIDE_WIDTH * 0.03); 
@@ -234,9 +223,8 @@ function resetTarefa8(pararSom = true) {
     if (pararSom) stopTarefa8Audio();
 }
 
-// Chamar isto no resetCurrentTask() do menu.js se gameState === "TAREFA8"[cite: 19]
-// Substitui a função stopTarefa8Audio por esta completa
-// Atualiza a função no tarefa8.js para parar mesmo os sons
+// Chamar isto no resetCurrentTask() do menu.js se gameState === "TAREFA8"
+// Substitui a função stopTarefa8Audio por esta
 function stopTarefa8Audio() {
     isSpinning = false;
     if (somDrums && typeof somDrums.stop === 'function') somDrums.stop();

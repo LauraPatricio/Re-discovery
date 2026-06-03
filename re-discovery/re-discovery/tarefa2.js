@@ -76,15 +76,16 @@ function drawTarefa2() {
 
     noStroke();
     fill(0, 0, 0, 180);
-    rect(0, 0, width, height); // Película escura
+    rect(0, 0, width, height); 
 
     push();
     imageMode(CORNER);
-    image(bgImg2, t2_popX, t2_popY, t2_popW, t2_popH); // Imagem da tarefa
+    image(bgImg2, t2_popX, t2_popY, t2_popW, t2_popH); 
     pop();
 
-    // ── LÓGICA DE ESTADOS (INSTRUÇÕES VS JOGO) ──
+    // logica de estados | instuçoes//jogo
     if (tarefa2State === "INSTRUCTIONS") {
+
         // Mostra o ecrã de instruções uniformizado
         push();
         translate(t2_popX, t2_popY);
@@ -149,22 +150,20 @@ function drawButtonsTarefa2() {
     for (let b of buttons2) {
         image(buttonImages[b.word], b.x, b.y, b.w, b.h);
 
-        // Deteta se o rato está por cima E a ser pressionado
         let isPressed = mouseIsPressed && mouseX > b.x && mouseX < b.x + b.w && mouseY > b.y && mouseY < b.y + b.h;
 
         if (tarefa2State !== 'PLAY') {
             push();
             noStroke();
             fill(0, 0, 0, 160); 
-            rect(b.x, b.y, b.w, b.h, 5); 
+            rect(b.x, b.y, b.w, b.h); 
             pop();
         } 
-        // Película cinzenta quando pressionado 
         else if (isPressed) {
             push();
             noStroke();
             fill(150, 150, 150, 150); 
-            rect(b.x, b.y, b.w, b.h, 5); 
+            rect(b.x, b.y, b.w, b.h); 
             pop();
         }
     }
@@ -172,12 +171,9 @@ function drawButtonsTarefa2() {
 
 function drawNeonPhrase(sequence, col) {
     textAlign(CENTER, CENTER);
-
-    // tamanho do texto ajustado ao pop-up
     textSize(t2_popW * (30 / 800));
     let phrase = sequence.join(" ");
 
-    // Posição y do texto relativa ao pop-up
     let textY = t2_popY + t2_popH * (135 / 500);
 
     push();
@@ -214,7 +210,7 @@ function mousePressedTarefa2() {
 }
 
 function checkInput(clickedWord) {
-    playerSequence2.push(clickedWord); // Erro do X corrigido aqui!
+    playerSequence2.push(clickedWord); // erro do xcorrigido 
 
     if (playerSequence2.length === correctSequence.length) {
         let isCorrect = true;
