@@ -20,6 +20,10 @@ let imgVidros = {};
 
 let svgNames = ["Aerodynamic", "Crescendolls", "Some", "Super", "Veridis", "Voyager", "Harder", "One"];
 
+// variáveis para guardar os vídeos dos monitores
+let videoVoyagerNave = null;
+let videoHarderNave = null;
+
 function preloadNave() {
     for (let nome of svgNames) {
         buttonLine[nome] = loadImage('imagens/btn' + nome + 'Line.svg');
@@ -86,6 +90,7 @@ function drawNave() {
 function drawCockpitLife() {
     push();
 
+    // noise ecras
     for(let i = 0; i < 30; i++) {
         let sx = noise(i, 0) * 1400 + 250; 
         let sy = noise(0, i) * 600 + 50;   
@@ -95,51 +100,104 @@ function drawCockpitLife() {
         ellipse(sx, sy, random(1, 3));
     }
 
-    drawStaticScreen(698, 805, 130, 100, TarefaConcluida.voyager); 
-    drawStaticScreen(935, 830, 115, 85, TarefaConcluida.harder);  
+    //aparece memoria 7
+    if (TarefaConcluida.voyager) {
+        if (!videoVoyagerNave) {
+            videoVoyagerNave = createVideo(['videos/memoria7.webm']);
+            videoVoyagerNave.elt.muted = true;
+            videoVoyagerNave.elt.playsInline = true;
+            videoVoyagerNave.loop();
+            videoVoyagerNave.hide();
+        }
+        drawVideoScreen(698, 805, 130, 100, videoVoyagerNave);
+    } else {
+        drawStaticScreen(698, 805, 130, 100);
+    }
 
-    drawColoredLight(180, 770, "circle", color(150, 0, 255)); 
-    drawColoredLight(260, 830, "circle", color(255, 255, 0)); 
-    drawColoredLight(1090, 900, "circle", color(0, 255, 0));  
-    drawColoredLight(1180, 760, "circle", color(255, 0, 0));  
-    drawColoredLight(1180, 840, "circle", color(0, 100, 255));
+    //aparece memoria 8
+    if (TarefaConcluida.harder) {
+        if (!videoHarderNave) {
+            videoHarderNave = createVideo(['videos/memoria2.webm']);
+            videoHarderNave.elt.muted = true; // Sem som
+            videoHarderNave.elt.playsInline = true;
+            videoHarderNave.loop();
+            videoHarderNave.hide();
+        }
+        drawVideoScreen(935, 830, 115, 85, videoHarderNave);
+    } else {
+        drawStaticScreen(935, 830, 115, 85);
+    }
+
+   //Luzes para conclusao das tarefas 
+    drawColoredLight(1180, 760, "circle", color(255, 0, 0), TarefaConcluida.super);  
+    drawColoredLight(180, 770, "circle", color(150, 0, 255), TarefaConcluida.one); 
+    drawColoredLight(260, 830, "circle", color(255, 255, 0), TarefaConcluida.veridis); 
+    drawColoredLight(1090, 900, "circle", color(0, 255, 0), TarefaConcluida.crescendolls);  
+    drawColoredLight(1180, 840, "circle", color(0, 100, 255), TarefaConcluida.some);
     
     pop();
 }
 
-function drawStaticScreen(cx, cy, w, h, isFinished) {
-    if (!isFinished) {
+function drawStaticScreen(cx, cy, w, h) {
+    push();
+    noStroke();
+    rectMode(CENTER);
+    
+    drawingContext.save();
+    drawingContext.beginPath();
+    drawingContext.roundRect(cx - w/2, cy - h/2, w, h, 15); 
+    drawingContext.clip(); 
+
+    fill(20, 20, 20, 240);
+    rect(cx, cy, w, h); 
+    
+    // Efeito de estática "chuvisco"
+    for (let i = 0; i < 200; i++) {
+        fill(255, 255, 255, random(50, 200));
+        rect(cx + random(-w/2, w/2), cy + random(-h/2, h/2), random(3, 7), random(3, 7));
+    }
+
+    drawingContext.restore();
+    pop();
+}
+
+function drawVideoScreen(cx, cy, w, h, vid) {
+    if (vid && vid.elt.readyState >= 2) {
         push();
+        imageMode(CENTER);
         noStroke();
-        rectMode(CENTER);
         
+        // Máscara 
         drawingContext.save();
         drawingContext.beginPath();
-        drawingContext.roundRect(cx - w/2, cy - h/2, w, h, 15); 
-        drawingContext.clip(); 
+        drawingContext.roundRect(cx - w/2, cy - h/2, w, h, 15);
+        drawingContext.clip();
 
-        fill(20, 20, 20, 240);
-        rect(cx, cy, w, h); 
-        
-        for (let i = 0; i < 200; i++) {
-            fill(255, 255, 255, random(50, 200));
-            rect(cx + random(-w/2, w/2), cy + random(-h/2, h/2), random(3, 7), random(3, 7));
-        }
+        image(vid, cx, cy, w, h);
 
         drawingContext.restore();
         pop();
     }
 }
 
-function drawColoredLight(cx, cy, shapeType, c) {
+// Atualizada para receber o isBlinkingGreen
+function drawColoredLight(cx, cy, shapeType, c, isBlinkingGreen = false) {
     push();
     rectMode(CENTER);
     
+    let finalColor = c;
     let pulseAlpha = sin(frameCount * 0.1 + cx * 0.05) * 100 + 100;
     
+
+    // Se a tarefa foi concluída, a luz fica VERDE NÉON e pisca mais rápido!
+    if (isBlinkingGreen) {
+        finalColor = color(62, 255, 81); 
+        pulseAlpha = map(sin(frameCount * 0.2), -1, 1, 50, 255); 
+    }
+    
     drawingContext.shadowBlur = 20;
-    drawingContext.shadowColor = color(red(c), green(c), blue(c), pulseAlpha); 
-    fill(red(c), green(c), blue(c), pulseAlpha * 0.8);
+    drawingContext.shadowColor = color(red(finalColor), green(finalColor), blue(finalColor), pulseAlpha); 
+    fill(red(finalColor), green(finalColor), blue(finalColor), pulseAlpha * 0.8);
     noStroke();
     
     if (shapeType === "circle") {
@@ -167,7 +225,7 @@ function drawBtnImagem(x, y, isUnlocked, isConcluded, imgLine, imgHover, imgConc
     imageMode(CENTER);
 
     if (isConcluded) {
-        image(imgConc, x, y, w, h);
+       
     }
     else if (isUnlocked) {
         if (over) {
@@ -252,8 +310,6 @@ function drawNaveHolograma() {
         fill(0, 255, 255);
         textSize(bgNave.width * 0.04);
         text("PROGRESS", cx, cy - h/2 - 80);
-    
-       
     }
 }
 
