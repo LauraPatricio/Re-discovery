@@ -90,7 +90,7 @@ function drawNave() {
 function drawCockpitLife() {
     push();
 
-    // noise ecras
+    // partículas de poeira/vida no cockpit
     for(let i = 0; i < 30; i++) {
         let sx = noise(i, 0) * 1400 + 250; 
         let sy = noise(0, i) * 600 + 50;   
@@ -100,11 +100,11 @@ function drawCockpitLife() {
         ellipse(sx, sy, random(1, 3));
     }
 
-    //aparece memoria 7
+    // memoria tarefa 6
     if (TarefaConcluida.voyager) {
         if (!videoVoyagerNave) {
             videoVoyagerNave = createVideo(['videos/memoria7.webm']);
-            videoVoyagerNave.elt.muted = true;
+            videoVoyagerNave.elt.muted = true; // Sem som
             videoVoyagerNave.elt.playsInline = true;
             videoVoyagerNave.loop();
             videoVoyagerNave.hide();
@@ -114,7 +114,7 @@ function drawCockpitLife() {
         drawStaticScreen(698, 805, 130, 100);
     }
 
-    //aparece memoria 8
+    // memoria tarefa 2
     if (TarefaConcluida.harder) {
         if (!videoHarderNave) {
             videoHarderNave = createVideo(['videos/memoria2.webm']);
@@ -128,7 +128,7 @@ function drawCockpitLife() {
         drawStaticScreen(935, 830, 115, 85);
     }
 
-   //Luzes para conclusao das tarefas 
+    // luzes apos fim das tareafas
     drawColoredLight(1180, 760, "circle", color(255, 0, 0), TarefaConcluida.super);  
     drawColoredLight(180, 770, "circle", color(150, 0, 255), TarefaConcluida.one); 
     drawColoredLight(260, 830, "circle", color(255, 255, 0), TarefaConcluida.veridis); 
@@ -151,7 +151,7 @@ function drawStaticScreen(cx, cy, w, h) {
     fill(20, 20, 20, 240);
     rect(cx, cy, w, h); 
     
-    // Efeito de estática "chuvisco"
+    // efeito estatica
     for (let i = 0; i < 200; i++) {
         fill(255, 255, 255, random(50, 200));
         rect(cx + random(-w/2, w/2), cy + random(-h/2, h/2), random(3, 7), random(3, 7));
@@ -167,7 +167,7 @@ function drawVideoScreen(cx, cy, w, h, vid) {
         imageMode(CENTER);
         noStroke();
         
-        // Máscara 
+        // Máscara
         drawingContext.save();
         drawingContext.beginPath();
         drawingContext.roundRect(cx - w/2, cy - h/2, w, h, 15);
@@ -188,8 +188,7 @@ function drawColoredLight(cx, cy, shapeType, c, isBlinkingGreen = false) {
     let finalColor = c;
     let pulseAlpha = sin(frameCount * 0.1 + cx * 0.05) * 100 + 100;
     
-
-    // Se a tarefa foi concluída, a luz fica VERDE NÉON e pisca mais rápido!
+    // Se a tarefa foi concluída, a luz fica verde
     if (isBlinkingGreen) {
         finalColor = color(62, 255, 81); 
         pulseAlpha = map(sin(frameCount * 0.2), -1, 1, 50, 255); 
@@ -225,17 +224,12 @@ function drawBtnImagem(x, y, isUnlocked, isConcluded, imgLine, imgHover, imgConc
     imageMode(CENTER);
 
     if (isConcluded) {
-
-        // Tarefa concluída: Mantém o preenchimento verde (já existente)
-        image(imgConc, x, y, w, h);
     }
     else if (isUnlocked) {
         if (over) {
-            // Mouse por cima: Desenha o outline (SVGs azuis)
             cursor(HAND);
             image(imgHover, x, y, w, h);
         }
-        // Se o rato não estiver por cima, não desenha nada (fica invisível)!
     }
     pop();
 }
@@ -413,21 +407,4 @@ function handleNaveClick() {
     if (btnNave.btnVeridis && !TarefaConcluida.veridis && clickBtn(1292, 837, buttonLine["Veridis"])) goTo("TAREFA7");
     if (btnNave.btnSome && !TarefaConcluida.some && clickBtn(1184, 839, buttonLine["Some"])) goTo("TAREFA5");
     if (btnNave.btnOne && !TarefaConcluida.one && clickBtn(522, 850, buttonLine["One"])) goTo("TAREFA8");
-}
-
-function mostrarCoordenadasRato() {
-    let larguraEscalada = bgNave.width * scaleRatioNave;
-    let centroX = (width - larguraEscalada) / 2;
-    let vX = (mouseX - centroX) / scaleRatioNave;
-    let vY = mouseY / scaleRatioNave;
-
-    push();
-    fill(255, 0, 0); 
-    noStroke();
-    textSize(20);
-    textFont('Arial');
-    textAlign(LEFT, TOP);
-    // Desenha nas coordenadas virtuais para acompanhar o cursor na perfeição!
-    text("X: " + floor(vX) + " | Y: " + floor(vY), vX + 15, vY + 15);
-    pop();
 }
