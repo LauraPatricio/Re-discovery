@@ -225,13 +225,17 @@ function drawBtnImagem(x, y, isUnlocked, isConcluded, imgLine, imgHover, imgConc
     imageMode(CENTER);
 
     if (isConcluded) {
-       
+
+        // Tarefa concluída: Mantém o preenchimento verde (já existente)
+        image(imgConc, x, y, w, h);
     }
     else if (isUnlocked) {
         if (over) {
+            // Mouse por cima: Desenha o outline (SVGs azuis)
             cursor(HAND);
             image(imgHover, x, y, w, h);
         }
+        // Se o rato não estiver por cima, não desenha nada (fica invisível)!
     }
     pop();
 }
@@ -409,4 +413,21 @@ function handleNaveClick() {
     if (btnNave.btnVeridis && !TarefaConcluida.veridis && clickBtn(1292, 837, buttonLine["Veridis"])) goTo("TAREFA7");
     if (btnNave.btnSome && !TarefaConcluida.some && clickBtn(1184, 839, buttonLine["Some"])) goTo("TAREFA5");
     if (btnNave.btnOne && !TarefaConcluida.one && clickBtn(522, 850, buttonLine["One"])) goTo("TAREFA8");
+}
+
+function mostrarCoordenadasRato() {
+    let larguraEscalada = bgNave.width * scaleRatioNave;
+    let centroX = (width - larguraEscalada) / 2;
+    let vX = (mouseX - centroX) / scaleRatioNave;
+    let vY = mouseY / scaleRatioNave;
+
+    push();
+    fill(255, 0, 0); 
+    noStroke();
+    textSize(20);
+    textFont('Arial');
+    textAlign(LEFT, TOP);
+    // Desenha nas coordenadas virtuais para acompanhar o cursor na perfeição!
+    text("X: " + floor(vX) + " | Y: " + floor(vY), vX + 15, vY + 15);
+    pop();
 }

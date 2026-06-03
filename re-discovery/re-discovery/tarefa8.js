@@ -196,7 +196,7 @@ function showFinalWin() {
   
   push();
   textAlign(CENTER, CENTER);
-  textFont('Impact'); // Fonte uniforme
+  textFont('Impact'); 
   
   drawingContext.shadowBlur = 25;
   drawingContext.shadowColor = color(0, 255, 100);

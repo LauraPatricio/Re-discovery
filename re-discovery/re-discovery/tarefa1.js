@@ -232,6 +232,7 @@ function mousePressedTarefa1() {
     for (let i = 0; i < 9; i++) {
         let b = interactiveButtons[i];
         if (mouseX > b.x && mouseX < b.x + b.size && mouseY > b.y && mouseY < b.y + b.size) {
+            if (typeof somClick !== 'undefined' && somClick.isLoaded()) somClick.play(); // ── NOVO SOM ──
             handlePlayerInput(i);
         }
     }

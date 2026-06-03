@@ -19,7 +19,6 @@ function iniciarCenaFinal() {
     let proporcao = disco[4].height / disco[4].width;
     _discoH = _discoW * proporcao;
 
-    // BUG 1 CORRIGIDO: começa completamente fora do ecrã por baixo
     // O disco entra de baixo da janela e sobe até ao centro
     _discoY         = height + _discoH;
     _discoScale     = 1.0;
@@ -118,7 +117,6 @@ function _drawFinalUI() {
     textFont('Impact');
     fill(255);
     textSize(width * 0.04);
-    // Efeito de brilho no título final
     drawingContext.shadowBlur = 20;
     drawingContext.shadowColor = color(62, 255, 81);
     text("RE-DISCOVERY COMPLETE", width / 2, height * 0.45);
@@ -133,16 +131,16 @@ function _drawFinalUI() {
 }
 
 function handleVitoriaClick() {
-    // Só permite clique se a animação tiver acabado
+    // so deixa clicar se a animação tiver acabado
     if (vitoriaFase === 4 && transitionType === "NONE") {
         
-        // Clique no RESTART
+        //restart
         if (mouseX > restartBtnFinal.x - restartBtnFinal.w/2 && mouseX < restartBtnFinal.x + restartBtnFinal.w/2 &&
             mouseY > restartBtnFinal.y - restartBtnFinal.h/2 && mouseY < restartBtnFinal.y + restartBtnFinal.h/2) {
-            location.reload(); // Faz o refresh total da página
+            location.reload(); // refresh
         }
         
-        // Clique no ABOUT
+        // aboyt
         if (mouseX > aboutBtnFinal.x - aboutBtnFinal.w/2 && mouseX < aboutBtnFinal.x + aboutBtnFinal.w/2 &&
             mouseY > aboutBtnFinal.y - aboutBtnFinal.h/2 && mouseY < aboutBtnFinal.y + aboutBtnFinal.h/2) {
             goTo("ABOUT", "FADE");
