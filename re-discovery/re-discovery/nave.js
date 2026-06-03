@@ -129,11 +129,11 @@ function drawCockpitLife() {
     }
 
     // luzes apos fim das tareafas
-    drawColoredLight(1180, 760, "circle", color(255, 0, 0), TarefaConcluida.super);  
-    drawColoredLight(180, 770, "circle", color(150, 0, 255), TarefaConcluida.one); 
-    drawColoredLight(260, 830, "circle", color(255, 255, 0), TarefaConcluida.veridis); 
-    drawColoredLight(1090, 900, "circle", color(0, 255, 0), TarefaConcluida.crescendolls);  
-    drawColoredLight(1180, 840, "circle", color(0, 100, 255), TarefaConcluida.some);
+    drawColoredLight(1179, 765, "circle", color(255, 0, 0), TarefaConcluida.super);  
+    drawColoredLight(178, 775, "circle", color(150, 0, 255), TarefaConcluida.one); 
+    drawColoredLight(260, 833, "circle", color(255, 255, 0), TarefaConcluida.veridis); 
+    drawColoredLight(1090, 900, "circle", color(0, 255, 0), TarefaConcluida.crescendolls ,40, 17);  
+    drawColoredLight(1183, 840, "circle", color(0, 100, 255), TarefaConcluida.some,35,35);
     
     pop();
 }
@@ -181,7 +181,7 @@ function drawVideoScreen(cx, cy, w, h, vid) {
 }
 
 // Atualizada para receber o isBlinkingGreen
-function drawColoredLight(cx, cy, shapeType, c, isBlinkingGreen = false) {
+function drawColoredLight(cx, cy, shapeType, c, isBlinkingGreen = false, tamanhoX = 32,tamanhoY =32 ) {
     push();
     rectMode(CENTER);
     
@@ -200,9 +200,9 @@ function drawColoredLight(cx, cy, shapeType, c, isBlinkingGreen = false) {
     noStroke();
     
     if (shapeType === "circle") {
-        ellipse(cx, cy, 32, 32);
+        ellipse(cx, cy, tamanhoX, tamanhoY); 
     } else {
-        rect(cx, cy, 30, 30, 5);
+        rect(cx, cy, tamanho, tamanho, 5); 
     }
     pop();
 }
