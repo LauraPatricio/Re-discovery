@@ -25,6 +25,7 @@ function setupTarefa7() {
 }
 
 function drawTarefa7() {
+  image(bgMenu, 0, 0, menuNewW, menuNewH);
   push();
   imageMode(CENTER);
   image(bgNave, width / 2, height / 2, naveNewW, naveNewH);
@@ -37,7 +38,6 @@ function drawTarefa7() {
   push();
   translate(widePopX, widePopY);
   scale(widePopW / WIDE_WIDTH, widePopH / WIDE_HEIGHT);
-
   imageMode(CORNER);
   image(bgImg7, 0, 0, WIDE_WIDTH, WIDE_HEIGHT);
 
@@ -48,6 +48,7 @@ function drawTarefa7() {
     );
   } 
   else {
+    //logica jogo
     drawUIRing();
     drawSyllables();
     drawConnectionLine();
@@ -71,7 +72,7 @@ function drawUIRing() {
 
 function drawSyllables() {
   textAlign(CENTER, CENTER);
-  textFont('Impact'); 
+  textFont('Impact');
   textSize(32);
   strokeWeight(2);
   
@@ -113,9 +114,9 @@ function drawResultArea() {
   if (flashError) {
     push();
     drawingContext.shadowBlur = 15;
-    drawingContext.shadowColor = color(255, 0, 0); // Brilho Neon Vermelho
+    drawingContext.shadowColor = color(255, 0, 0); 
     fill(255, 50, 50);
-    
+  
     textSize(WIDE_WIDTH * 0.08); 
     text("FAILED", displayX, 230); 
     pop();
@@ -127,19 +128,20 @@ function drawResultArea() {
     }
     
   } else if (currentWord !== "") {
-    push();
+    // Feedback visual de progresso 
     fill(0, 255, 100);
     drawingContext.shadowBlur = 15;
     drawingContext.shadowColor = color(0, 255, 100);
     textSize(40);
-    text(currentWord.toUpperCase(), displayX, 220); 
+    text(currentWord.toUpperCase(), displayX, 220);
     pop();
   }
   
-  drawingContext.shadowBlur = 0; // Reset do brilho para outros elementos
+  drawingContext.shadowBlur = 0;
 }
 
 function showWinScreenUniform7() {
+    noStroke();
     fill(0, 0, 0, 200);
     rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
     
@@ -162,14 +164,15 @@ function showWinScreenUniform7() {
 
 
 function mousePressedTarefa7() {
+  // Verificar clique no botão de instruções
   if (tarefa7State === "INSTRUCTIONS") {
     if (checkStartClick()) {
-      tarefa7State = "PLAY";
+      tarefa7State = "PLAY"; 
     }
     return;
   }
 
-  //Lógica de início de conexão
+  // lógica de início de conexão
   if (discoveryVisible) return;
 
   let virtualMouseX = (mouseX - widePopX) / (widePopW / WIDE_WIDTH);
@@ -187,7 +190,6 @@ function mousePressedTarefa7() {
 
 function mouseDraggedTarefa7() {
   if (discoveryVisible) return;
-
   let virtualMouseX = (mouseX - widePopX) / (widePopW / WIDE_WIDTH);
   let virtualMouseY = (mouseY - widePopY) / (widePopH / WIDE_HEIGHT);
 
@@ -217,13 +219,14 @@ function mouseReleasedTarefa7() {
       currentWord = "disquoveri";
       discoveryVisible = true;
       
+      // vitoria e desbloqueio
       TarefaConcluida.veridis = true; 
       
       setTimeout(() => {
           resetAttempt(); 
           discoveryVisible = false;
-          tarefa7State = "INSTRUCTIONS"; 
-          concluirComMemoria("veridis"); 
+          tarefa7State = "INSTRUCTIONS"; // Reset da colega
+          concluirComMemoria("veridis"); //chama o vídeo
       }, 1500);
 
     } else {

@@ -11,7 +11,7 @@ let interactiveButtons = [];
 let visualSquares = [];
 let gameStatus = "";
 
-// ── VARIÁVEIS DO POP-UP ──
+// variaveis pop-up
 let popX, popY, popW, popH;
 
 function preloadTarefa1() {
@@ -30,7 +30,7 @@ function initializeGrids() {
     interactiveButtons = [];
     visualSquares = [];
 
-    // 1. Calcular o tamanho do Pop-up (80% do ecrã, mantendo proporção)
+    // Manter proporção)
     popW = width * 0.65;
     popH = popW * (600 / 1100);
 
@@ -39,11 +39,11 @@ function initializeGrids() {
         popW = popH * (1100 / 600);
     }
 
-    // 2. Calcular o centro para o Pop-up
+    // Calcular o centro para o Pop-up
     popX = width / 2 - popW / 2;
     popY = height / 2 - popH / 2;
 
-    // 3. Coordenadas relativas ao tamanho e posição do Pop-up
+    //Coordenadas relativas ao tamanho e posição do Pop-up
     let rightX = popX + popW * 0.575;
     let rightY = popY + popH * 0.175;
     let gapX = popW * 0.126;
@@ -74,29 +74,25 @@ function initializeGrids() {
 }
 
 function drawTarefa1() {
-    // ── EFEITO POP-UP (Fundo e Moldura) ──
-    // 1. Desenha a nave no fundo
     push();
+    image(bgMenu, 0, 0, menuNewW, menuNewH);
     imageMode(CENTER);
     image(bgNave, width/2, height/2, naveNewW, naveNewH);
     pop();
 
-    // 2. Película escura
     noStroke();
     fill(0, 0, 0, 180);
     rect(0, 0, width, height);
 
-    // 3. Desenha a imagem da tarefa centrada (O Pop-up)
     push();
     imageMode(CORNER);
-    image(bgImg, popX, popY, popW, popH); // Imagem da tarefa
+    image(bgImg, popX, popY, popW, popH); 
     pop();
 
-    // ── LÓGICA DE ESTADOS (MUDANÇA AQUI) ──
+    // logica mudança de estados
     if (tarefa1State === "INSTRUCTIONS") {
         push();
         translate(popX, popY);
-        // CORREÇÃO: Usar as variáveis globais do pop-up para tapar os buracos!
         scale(popW / WIDE_WIDTH, popH / WIDE_HEIGHT); 
         drawTaskInstructions(
             "Aerodynamic", 
@@ -105,12 +101,13 @@ function drawTarefa1() {
         pop();
     }
     else {
-        // --- TUDO O QUE ESTÁ AQUI DENTRO SÓ ACONTECE DEPOIS DO START ---
+        
 
         // Lógica da sequência
         if (isShowing) {
             if (millis() - lastStepTime > 600) {
-                // Desativa todos os brilhos antes de mostrar o próximo
+
+                // desativa todos os brilhos antes de mostrar o próximo
                 for (let i = 0; i < 9; i++) visualSquares[i].active = false;
 
                 if (step < sequence.length) {
@@ -133,7 +130,8 @@ function drawTarefa1() {
 }
 
 function drawVisualFeedbacks() {
-    for (let i = 0; i < 9; i++) {
+
+   for (let i = 0; i < 9; i++) {
         if (visualSquares[i].active) {
             noStroke();
             fill(255, 255, 255, 180);
@@ -149,28 +147,65 @@ function drawVisualFeedbacks() {
 
         if (b.active) {
             noStroke();
-            fill(150, 150, 150, 150); // Tom acinzentado semi-transparente
+            fill(150, 150, 150, 150);
             rect(b.x, b.y, b.size, b.size);
         } 
     }
+
 }
 
 function drawResultMessage() {
     if (gameStatus !== "") {
         push();
-        textAlign(CENTER, CENTER);
-        textFont('Impact');
-        textSize(popW * 0.08); // Tamanho de texto relativo ao pop-up
+        translate(popX, popY);
+        scale(popW / WIDE_WIDTH, popH / WIDE_HEIGHT); 
 
         if (gameStatus === "FAIL") {
-            fill(255, 0, 0);
-            text("FAILED - TRY AGAIN", width / 2, height / 2);
+            showFailScreenUniform();
         } else if (gameStatus === "PASS") {
-            fill(0, 255, 0);
-            text("IDENTITY RECOVERED", width / 2, height / 2);
+            showWinScreenUniform();
         }
         pop();
     }
+}
+
+function showWinScreenUniform() {
+    fill(0, 0, 0, 200);
+    rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
+    
+    push();
+    textAlign(CENTER, CENTER);
+    textFont('Impact');
+    
+   
+    drawingContext.shadowBlur = 15;
+    drawingContext.shadowColor = color(0, 255, 100);
+    fill(0, 255, 100);
+    textSize(WIDE_WIDTH * 0.08); 
+    text("IDENTITY RECOVERED", WIDE_WIDTH / 2, WIDE_HEIGHT / 2);
+    
+    
+    drawingContext.shadowBlur = 0; 
+    textSize(WIDE_WIDTH * 0.03); 
+    fill(255);
+    text("MEMORY SYNCED...", WIDE_WIDTH / 2, WIDE_HEIGHT / 2 + 60);
+    pop();
+}
+
+function showFailScreenUniform() {
+    fill(0, 0, 0, 200);
+    rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
+    
+    push();
+    textAlign(CENTER, CENTER);
+    textFont('Impact');
+    
+    drawingContext.shadowBlur = 15;
+    drawingContext.shadowColor = color(255, 0, 0);
+    fill(255, 0, 0);
+    textSize(WIDE_WIDTH * 0.08);
+    text("FAILED - TRY AGAIN", WIDE_WIDTH / 2, WIDE_HEIGHT / 2);
+    pop();
 }
 
 function drawStartScreen() {
@@ -179,7 +214,7 @@ function drawStartScreen() {
     fill(255);
     textAlign(CENTER, CENTER);
     textFont('Impact');
-    textSize(popW * 0.03); // Tamanho de texto relativo ao pop-up
+    textSize(popW * 0.03); 
     text("AERODYNAMIC: MEMORIZE THE PATTERN\nCLICK TO START", width / 2, height / 2);
 }
 
@@ -187,7 +222,7 @@ function mousePressedTarefa1() {
     if (tarefa1State === "INSTRUCTIONS") {
         if (checkStartClick()) {
             tarefa1State = "PLAY"; 
-            startNewRound();
+            startNewRound(); // Arranca a primeira sequência de luzes/sons
         }
         return; 
     }
@@ -229,9 +264,9 @@ function handlePlayerInput(idx) {
 function startNewRound() {
     sequence = [];
     
-    // Gera uma sequência de 5 passos, escolhendo aleatoriamente entre os 9 botões (0 a 8)
+    // Gera uma sequência 
     for (let i = 0; i < 5; i++) {
-        let randomButton = floor(random(9)); // Escolhe um número inteiro de 0 a 8
+        let randomButton = floor(random(9)); 
         sequence.push(randomButton);
     }
     
@@ -242,7 +277,7 @@ function startNewRound() {
     gameStatus = "";
 }
 
-// Atualizado para o menu.js chamar quando redimensionar a janela
+//chamar quando redimensionar a janela
 function windowResizedTarefa1() {
     initializeGrids();
 }

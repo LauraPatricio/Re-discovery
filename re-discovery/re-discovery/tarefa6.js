@@ -5,9 +5,13 @@ let tarefa6State = "INSTRUCTIONS";
 let pathPoints6 = [];
 const tolerance6 = 25; 
 
+// som
+let som6;
+
 function preloadTarefa6() {
   bgImg6 = loadImage('imagens/tarefa6.png');
   rocketImg6 = loadImage('imagens/rocket.png');
+  som6 = loadSound('sons/voyager.mp3'); 
 }
 
 function setupTarefa6() {
@@ -26,6 +30,7 @@ function setupTarefa6() {
 
 function drawTarefa6() {
   push();
+  image(bgMenu, 0, 0, menuNewW, menuNewH);
   imageMode(CENTER);
   image(bgNave, width / 2, height / 2, naveNewW, naveNewH);
   pop();
@@ -41,6 +46,7 @@ function drawTarefa6() {
   imageMode(CORNER);
   image(bgImg6, 0, 0, WIDE_WIDTH, WIDE_HEIGHT);
 
+
   if (tarefa6State === "INSTRUCTIONS") {
     drawTaskInstructions(
         "Voyager", 
@@ -48,6 +54,8 @@ function drawTarefa6() {
     );
   } 
   else {
+   
+    // logica jogo
     if (tarefa6State === "START") {
       drawOverlay6("VOYAGER", "HOLD MOUSE TO GUIDE ROCKET");
       drawRocket6(pathPoints6[0].x, pathPoints6[0].y);
@@ -73,15 +81,15 @@ function drawOverlay6(title, subtitle) {
     
     push();
     textAlign(CENTER, CENTER);
-    textFont('Impact'); // Uniform font
+    textFont('Impact'); 
     
     if (title === "FAILED") {
         drawingContext.shadowBlur = 15;
         drawingContext.shadowColor = color(255, 0, 0); 
-        fill(255, 0, 0); // Red text
+        fill(255, 0, 0); 
     } else {
         drawingContext.shadowBlur = 15;
-        drawingContext.shadowColor = color(0, 255, 255);
+        drawingContext.shadowColor = color(0, 255, 255); 
         fill(0, 255, 255); 
     }
     
@@ -127,11 +135,16 @@ function updateGame6() {
       if (d < minD) minD = d;
     }
 
+   
     if (minD > tolerance6) {
       tarefa6State = "FAIL";
       isDragging6 = false; 
+      
+      // Para a música imediatamente
+      if (som6 && som6.isPlaying()) som6.stop(); 
     }
 
+    
     let endPoint = pathPoints6[pathPoints6.length - 1];
     if (dist(virtualMouseX, virtualMouseY, endPoint.x, endPoint.y) < 25) {
       tarefa6State = "WIN";
@@ -139,8 +152,8 @@ function updateGame6() {
       TarefaConcluida.voyager = true; 
       
       setTimeout(() => {
-          resetGame6(); // Limpa a tarefa para a próxima vez
-          concluirComMemoria("voyager"); // Chama o vídeo da memória correspondente
+          resetGame6(false); 
+          concluirComMemoria("voyager"); 
       }, 1500);
     }
     
@@ -158,17 +171,22 @@ function mousePressedTarefa6() {
     if (checkStartClick()) {
       tarefa6State = "START"; 
     }
-    return; // Impede interações com o foguetão antes de começar
+    return; 
   }
 
   let virtualMouseX = (mouseX - widePopX) / (widePopW / WIDE_WIDTH);
   let virtualMouseY = (mouseY - widePopY) / (widePopH / WIDE_HEIGHT);
 
   if (tarefa6State === "START" || tarefa6State === "FAIL") {
-    //começa a arrastar
     if (dist(virtualMouseX, virtualMouseY, pathPoints6[0].x, pathPoints6[0].y) < 30) {
       tarefa6State = "PLAYING";
       isDragging6 = true;
+
+     
+      if (som6 && som6.isLoaded() && !som6.isPlaying()) {
+          som6.setVolume(0.3);
+          som6.loop();
+      }
     }
   }
 }
@@ -177,10 +195,19 @@ function mouseReleasedTarefa6() {
   if (tarefa6State === "PLAYING") {
     tarefa6State = "FAIL";
     isDragging6 = false;
+    
+    
+    if (som6 && som6.isPlaying()) som6.stop();
   }
 }
 
-function resetGame6() {
+
+function resetGame6(pararSom = true) { 
   tarefa6State = "INSTRUCTIONS";
   isDragging6 = false;
+
+  
+  if (pararSom && som6 && som6.isPlaying()) {
+      som6.stop();
+  }
 }

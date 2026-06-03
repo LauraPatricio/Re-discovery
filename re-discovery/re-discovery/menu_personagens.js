@@ -56,7 +56,7 @@ function drawMenuPersonagens() {
     let proporcao = imgArpegius.height / imgArpegius.width;
     let h = w * proporcao;
 
-    // Desenhar as 4 cartas
+    // desenhar as 4 cartas
     drawCard(imgBaryl, xBaryl, y, w, h, personagensStatus.baryl);
     drawCard(imgArpegius, xArpegius, y, w, h, personagensStatus.arpegius);
     drawCard(imgOctave, xOctave, y, w, h, personagensStatus.octave);
@@ -79,7 +79,7 @@ function drawDiscoProgress() {
         nivelDisco = 1; // Baryl terminou -> 1 Pedaço
     }
 
-    // Desenha o disco apenas se o jogador já tiver ganho pelo menos 1 pedaço
+    // desenha o disco apenas se o jogador ja tiver ganho pelo menos 1 pedaço
     if (nivelDisco > 0) {
         push();
         imageMode(CENTER);
@@ -106,7 +106,7 @@ function drawCard(img, x, y, w, h, isUnlocked) {
             let isHover = mouseX > x - w / 2 && mouseX < x + w / 2 && mouseY > y - h / 2 && mouseY < y + h / 2;
 
             if (isHover) {
-               cursor(HAND); // Muda o cursor para a mãozinha
+               cursor(HAND); 
                 
                 push();
                 rectMode(CENTER);
@@ -125,9 +125,10 @@ function drawCard(img, x, y, w, h, isUnlocked) {
             }
             image(img, x, y, w, h);
         } else {
-            // Se estiver bloqueado, desenha a imagem mais escura
+
+            // se estiver bloqueado, desenha a imagem mais escura
             push();
-            tint(100); // Aplica um filtro escuro 
+            tint(100);
             image(img, x, y, w, h);
             pop();
         }

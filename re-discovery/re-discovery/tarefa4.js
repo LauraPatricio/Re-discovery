@@ -14,6 +14,7 @@ function preloadTarefa4() {
 function setupTarefa4() {}
 
 function drawTarefa4() {
+  image(bgMenu, 0, 0, menuNewW, menuNewH);
   image(bgNave, 0, 0, width, height); 
   noStroke();
   fill(0, 0, 0, 180);

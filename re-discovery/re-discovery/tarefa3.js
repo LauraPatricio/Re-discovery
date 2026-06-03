@@ -2,10 +2,10 @@ let bgImg3;
 let player3;
 let obstacles3 = [];
 let tarefa3State = "INSTRUCTIONS";
-let som3; // Variável para a música
+let som3; 
 
-// Timestamps em segundos onde o "Hey" acontece na música
-// Ajustados conforme o ritmo de 'Crescendolls'
+
+// Ajustados conforme o ritmo de crescendolls
 let heyTimes = [0.8, 2.3, 3.8, 5.3, 6.8, 8.3, 9.8, 11.3, 12.8, 14.3];
 let nextHeyIndex = 0;
 
@@ -13,10 +13,8 @@ let groundLevel3 = 342;
 let gameSpeed3 = 5;
 let score3 = 0;
 const GOAL3 = 10;
-
 function preloadTarefa3() {
     bgImg3 = loadImage('imagens/tarefa3.png');
-    // Certifique-se de que o caminho e nome do arquivo de áudio estejam corretos
     som3 = loadSound('sons/crescendolls.mp3');
 }
 
@@ -26,8 +24,9 @@ function setupTarefa3() {
 }
 
 function drawTarefa3() {
-    // ── EFEITO POP-UP ──
+   
     push();
+     image(bgMenu, 0, 0, menuNewW, menuNewH);
     imageMode(CENTER);
     image(bgNave, width / 2, height / 2, naveNewW, naveNewH);
     pop();
@@ -43,7 +42,6 @@ function drawTarefa3() {
     imageMode(CORNER);
     image(bgImg3, 0, 0, WIDE_WIDTH, WIDE_HEIGHT);
 
-    // ── LÓGICA DE ESTADOS ──
     if (tarefa3State === "INSTRUCTIONS") {
         drawTaskInstructions(
             "Crescendolls", 
@@ -67,18 +65,18 @@ function drawTarefa3() {
         }
 
         for (let i = obstacles3.length - 1; i >= 0; i--) {
-            let obs = obstacles3[i]; // Referência direta para segurança
+            let obs = obstacles3[i]; 
             
             obs.move();
             obs.show();
 
-            // 1. Verificar Colisão (Utilizando o método hits do PLAYER para maior estabilidade)
+
             if (player3.hits(obs)) {
                 resetGame3(true); 
                 return; 
             }
 
-            // 2. Verificar Passagem
+            //Verificar Passagem
             if (!obs.passed && obs.x + obs.w < player3.x) {
                 score3++;
                 obs.passed = true;
@@ -147,20 +145,17 @@ function keyPressedTarefa3() {
 }
 
 function resetGame3(pararSom = true) {
-    // 1. Limpar elementos do jogo
+    //Limpar elementos do jogo
     obstacles3 = [];
     score3 = 0;
     nextHeyIndex = 0;
-    
-    // 2. Repor estado para as instruções aparecerem da próxima vez
+
     tarefa3State = "INSTRUCTIONS";
     
-    // 3. Recriar o objeto do jogador
+    // recriar o objeto do jogador
     player3 = new Player3();
     
-    // 4. Controlo de Áudio
-    // Se pararSom for true (derrota ou reset manual), paramos a música.
-    // Se for false (vitória), a música continua para a memória.
+
     if (pararSom && som3 && som3.isPlaying()) {
         som3.stop();
     }
@@ -169,8 +164,7 @@ function resetGame3(pararSom = true) {
 function mousePressedTarefa3() {
     if (tarefa3State === "INSTRUCTIONS") {
         if (checkStartClick()) {
-            tarefa3State = "PLAY"; 
-            // A música será iniciada automaticamente no draw no próximo frame!
+            tarefa3State = "PLAY";
         }
     }
 }
@@ -197,10 +191,12 @@ class Player3 {
     }
 
     show() {
+        push();
         fill(0, 255, 255);
         stroke(255);
         strokeWeight(2);
         rect(this.x, this.y, this.size, this.size);
+        pop();
     }
 
     hits(obs) {
@@ -216,7 +212,7 @@ class Obstacle3 {
         this.type = floor(random(0, 3));
         this.speed = gameSpeed3;
         this.passed = false;
-        this.isHey = isHey; // Marca se é um obstáculo de ritmo
+        this.isHey = isHey; // marca se é um obstaculo 
 
         if (this.type === 0) {
             this.w = 30;
@@ -247,11 +243,10 @@ class Obstacle3 {
                 rect(this.x, this.y, this.w, this.h);
             }
 
-            // Desenhar o balão "Hey!" acima do obstáculo
             if (this.isHey) {
                 textAlign(CENTER);
                 textSize(20);
-                fill(255, 255, 0); // Amarelo para destaque
+                fill(255, 255, 0);
                 text("Hey!", this.x + this.w / 2, this.y - 10);
             }
         }

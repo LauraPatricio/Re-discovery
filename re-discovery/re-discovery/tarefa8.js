@@ -1,19 +1,19 @@
 let bgImg8, vinylCenterImg;
 let somDrums, somOneMore; // Faixas sincronizadas
 let somStatic;           // Ruído do vinil
-let winDelayTimer8 = 0;   // Timer de 5 segundos
+let winDelayTimer8 = 0;  
 let tarefa8State = "INSTRUCTIONS";
 let sliderY = 270; 
 let sliderSpeed = 4;
 let sliderDirection = 1;
 
-let rectX = 92;      
-let rectW = 114;     
+let rectX = 92;     
+let rectW = 114;    
 let greenZoneY = 234; 
-let greenZoneH = 72;  
+let greenZoneH = 72;
 
 let vinylX = 537;   
-let vinylY = 225;    
+let vinylY = 225;  
 // --------------------------------------------
 
 let rotationAngle = 0;
@@ -26,6 +26,7 @@ function preloadTarefa8() {
   bgImg8 = loadImage('imagens/tarefa8.png');
   vinylCenterImg = loadImage('imagens/Daft_Punk_Discovery.png');
   
+ 
   somDrums = loadSound('sons/drumsOMT.mp3');
   somOneMore = loadSound('sons/one more time.mp3');
   somStatic = loadSound('sons/vinyl static.mp3');
@@ -37,6 +38,7 @@ function setupTarefa8() {
 
 function drawTarefa8() {
   push();
+  image(bgMenu, 0, 0, menuNewW, menuNewH);
   imageMode(CENTER);
   image(bgNave, width / 2, height / 2, naveNewW, naveNewH);
   pop();
@@ -59,9 +61,7 @@ function drawTarefa8() {
     );
   } 
   else {
-    //dps do start
     drawVinylLabel();
-
     if (tarefa8phase === 1) {
       handleSliderPhase();
     } 
@@ -110,7 +110,7 @@ function handleSliderPhase() {
 
   sliderY += sliderSpeed * sliderDirection;
   
-  // Limites do slider 
+  // Limites do slider redimensionados
   if (sliderY > 387 || sliderY < 126) sliderDirection *= -1;
 
   stroke(0, 255, 255);
@@ -124,7 +124,6 @@ function handleSliderPhase() {
 }
 
 function handleVinylPhase() {
-  // Conversão do rato para o vinil detetar a rotação
   let virtualMouseX = (mouseX - widePopX) / (widePopW / WIDE_WIDTH);
   let virtualMouseY = (mouseY - widePopY) / (widePopH / WIDE_HEIGHT);
 
@@ -144,7 +143,7 @@ function handleVinylPhase() {
     isSpinning = false;
   }
 
-  //progress bar
+  // PROGRESS BAR: SMALLER WIDTH E CENTRALIZADA NO WIDE_WIDTH
   let barWidth = 150; 
   let progress = map(totalRotation, 0, TWO_PI * targetRotations, 0, barWidth);
   
@@ -171,7 +170,7 @@ function mousePressedTarefa8() {
       tarefa8State = "PLAY";
       tarefa8phase = 1;
 
-      // começa audio apos user interagir
+      // INICIAR ÁUDIO APÓS INTERAÇÃO 
       if (somStatic && somStatic.isLoaded() && !somStatic.isPlaying()) {
           somStatic.loop(); 
           somStatic.setVolume(0);
@@ -224,7 +223,8 @@ function resetTarefa8(pararSom = true) {
     if (pararSom) stopTarefa8Audio();
 }
 
-// Atualiza a função no tarefa8.js para parar mesmo os sons
+// Chamar isto no resetCurrentTask() do menu.js se gameState === "TAREFA8"
+// Substitui a função stopTarefa8Audio por esta
 function stopTarefa8Audio() {
     isSpinning = false;
     if (somDrums && typeof somDrums.stop === 'function') somDrums.stop();

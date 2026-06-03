@@ -43,13 +43,13 @@ function concluirComMemoria(tarefaKey) {
     memoriaVideo.hide();
     memoriaVideo.elt.playsInline = true;
     
-    let tarefasMusicais = ['crescendolls', 'super', 'some', 'one'];
+    let tarefasMusicais = ['crescendolls', 'super', 'some', 'one', 'voyager'];
     if (!tarefasMusicais.includes(tarefaKey) && sonsExtraMemoria[tarefaKey]) {
         sonsExtraMemoria[tarefaKey].play();
     }
 
     memoriaVideo.onended(() => {
-        // Se isFinalVictory for tru esta função no menu.js não faz nada
+        // se isFinalVictory for tru esta função no menu.js não faz nada
         pararTodosSonsTarefas(); 
         
         if (sonsExtraMemoria[currentMemoriaKey]) {
@@ -70,57 +70,40 @@ function concluirComMemoria(tarefaKey) {
 
 function drawMemoriaScreen() {
     push();
+    image(bgMenu, 0, 0, menuNewW, menuNewH);
     imageMode(CENTER);
     image(bgNave, width / 2, height / 2, naveNewW, naveNewH);
     pop();
 
+   
     noStroke();
     fill(0, 0, 0, 180);
     rect(0, 0, width, height);
 
-    push();
-    translate(widePopX, widePopY);
-    scale(widePopW / WIDE_WIDTH, widePopH / WIDE_HEIGHT);
+    //calc para manter o ratio
 
-    if (memoriaVideo && memoriaVideo.elt.readyState >= 2) {
-        imageMode(CORNER);
-        image(memoriaVideo, 0, 0, WIDE_WIDTH, WIDE_HEIGHT);
-        
-        // Efeito Vignette 
-        let grad = drawingContext.createRadialGradient(WIDE_WIDTH/2, WIDE_HEIGHT/2, WIDE_HEIGHT * 0.2, WIDE_WIDTH/2, WIDE_HEIGHT/2, WIDE_WIDTH * 0.7);
-        grad.addColorStop(0, 'rgba(0,0,0,0)');
-        grad.addColorStop(1, 'rgba(0,0,0,0.95)');
-        
-        drawingContext.fillStyle = grad;
-        noStroke();
-        noFill();
-        rect(0, 0, WIDE_WIDTH, WIDE_HEIGHT);
+    let videoH = height * 0.75; 
+    let videoW = videoH * (4 / 3); 
+
+    // se o ecrã for muito estreito, ajusta pela largura em vez da altura
+    if (videoW > width * 0.9) {
+        videoW = width * 0.9;
+        videoH = videoW * (3 / 4);
     }
-    pop();
-}
-// NAO É USADA
-function _drawContinueButton(vW, vH) {
-    // Escurece o último frame do vídeo ligeiramente
-    noStroke();
-   noFill();
-    rect(0, 0, vW, vH);
 
-    push();
-    textAlign(CENTER, CENTER);
-    textFont('Impact');
+    let videoX = (width - videoW) / 2;
+    let videoY = (height - videoH) / 2;
 
-    drawingContext.shadowBlur = 15;
-    drawingContext.shadowColor = color(0, 255, 100);
-    
-    // fill para o texto não desaparecer
-    fill(0, 255, 100); 
-    textSize(vW * 0.08);
-    text("CLICA PARA CONTINUAR", vW / 2, vH / 2);
-    
-    pop();
+   
+    if (memoriaVideo && memoriaVideo.elt.readyState >= 2) {
+        push();
+        imageMode(CORNER);
+        
+        image(memoriaVideo, videoX, videoY, videoW, videoH);
+        pop();
+    }
 }
 
-// Input do user
 function handleMemoriaClick() {
     if (memoriaEnded) {
         pararMemoria();
